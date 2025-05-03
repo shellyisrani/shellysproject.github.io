@@ -7,7 +7,7 @@ A big, modern, blocky affair with a mobile-style menu, fully responsive styling,
 and an assortment of pre-styled elements. So, pretty much what you were expecting
 -- except, of course, for how it's put together, specifically:
 
-- It's built with components from my Responsive Tools project.
+- It's built with components from my Responsive Tools project. wag
 
 - It uses flexbox, which eliminates all kinds of terrible hacks and clunky layout
   stopgaps (like CSS grid systems).
