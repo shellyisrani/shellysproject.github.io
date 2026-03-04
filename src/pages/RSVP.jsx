@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
 import HomeButton from "@/components/wedding/HomeButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,7 +34,11 @@ export default function RSVP() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    await base44.entities.RSVPResponse.create(formData);
+    // Simulate form submission delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    // In a real static site, you could:
+    // - Use a form service like Formspree, Netlify Forms, or EmailJS
+    // - Or just show the success message (current behavior)
     setSubmitted(true);
     setSubmitting(false);
   };
