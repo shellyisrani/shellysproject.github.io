@@ -34,11 +34,19 @@ export default function RSVP() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    // Simulate form submission delay
+    
+    // Simulate form submission delay for better UX
     await new Promise(resolve => setTimeout(resolve, 500));
-    // In a real static site, you could:
-    // - Use a form service like Formspree, Netlify Forms, or EmailJS
-    // - Or just show the success message (current behavior)
+    
+    // Note: This form doesn't actually save data anywhere.
+    // To enable form submissions, you can:
+    // 1. Use a form service like Formspree (free tier available)
+    // 2. Use EmailJS to send emails directly
+    // 3. Use Netlify Forms if hosting on Netlify
+    // 4. Set up your own backend API
+    
+    // For now, just show success message
+    console.log('RSVP submitted:', formData);
     setSubmitted(true);
     setSubmitting(false);
   };
