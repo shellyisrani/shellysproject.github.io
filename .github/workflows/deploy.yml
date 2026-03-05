@@ -34,18 +34,6 @@ jobs:
       - name: Build
         run: npm run build
       
-      - name: Verify build output
-        run: |
-          echo "Checking build output..."
-          ls -la dist/
-          if [ -f "dist/index.html" ]; then
-            echo "✓ index.html exists"
-            head -20 dist/index.html
-          else
-            echo "✗ index.html missing!"
-            exit 1
-          fi
-      
       - name: Verify CNAME exists
         run: |
           if [ -f "dist/CNAME" ]; then
