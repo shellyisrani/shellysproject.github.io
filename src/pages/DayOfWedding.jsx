@@ -69,13 +69,10 @@ export default function DayOfWedding() {
           </h2>
           <div className="space-y-0">
             {[
-              { time: "3:30 PM", event: "Guests Arrive & are Seated" },
-              { time: "4:00 PM", event: "Ceremony Begins" },
-              { time: "4:30 PM", event: "Cocktail Hour" },
-              { time: "5:45 PM", event: "Dinner" },
-              { time: "7:00 PM", event: "Dessert & Reception" },
-              { time: "10:30 PM", event: "Second Dessert" },
-              { time: "11:30 PM", event: "Bedtime" },
+              { time: "3:30 PM - 4:30 PM", event: "Ceremony" },
+              { time: "4:30 PM - 5:30 PM", event: "Cocktail Hour" },
+              { time: "5:45 PM - 7:00 PM", event: "Dinner" },
+              { time: "7:00 PM - 11:30 PM", event: "Dessert & Reception" },
             ].map((item, i) => (
               <div key={i} className="flex gap-8 py-5 border-b border-[#e8e6e3]">
                 <span
@@ -105,18 +102,13 @@ export default function DayOfWedding() {
           </h2>
           <p className="text-xs tracking-[0.3em] uppercase text-[#c9a96e] mb-3" style={{ fontFamily: "var(--font-sans)" }}>
             From the Cocktail Hour onwards, we will have a full open bar which will include liquor, beer, wine and a variety of non-alcholic drinks.
-            <br />
-            The kitchen at Roxbury is fully nut-free and can accomodate specific allergies or dietary restrictions. Please let us know in the RSVP section if any allergies or restrictions need to be noted down.
           </p>
           <div className="space-y-10">
             {[
               {
-                course: "Cocktail Hour (Passed Hors D'Oeuvre's)",
+                course: "Cocktail Hour",
                 items: [
-                  "Mac & Cheese Shooter",
-                  "Fried Chicken Skewers (GF/DF)",
-                  "Butternut Squash Flatbread",
-                  "Vegetable Samosa (GF/DF/VEG)"
+                  "Passed Hors D'Oeuvre's"
                 ],
               },
               {
@@ -177,6 +169,14 @@ export default function DayOfWedding() {
                 a: "No black or red is allowed! Exceptions will be made for shoes. \n Black tie preferred. We encourage guests to dress to impress — think formal gowns, suits, or cocktail attire.",
               },
               {
+                q: "Can allergies and dietary restrictions be accomodated?",
+                a: "Roxbury is a farm to table kitchen; it is entirely nut-free and can accomodate specific allergies or dietary restrictions. \n Please let us know in the RSVP section if any allergies or restrictions need to be noted down.",
+              },
+              {
+                q: "Will there be an open bar?",
+                a: "Yes!",
+              },
+              {
                 q: "Will there be transportation?",
                 a: "Shuttle service will be provided between select hotels and the venue. Details will be shared closer to the date. Due to the location of the venue, rideshare services may take a while to come or may not be available at all.",
               },
@@ -187,6 +187,10 @@ export default function DayOfWedding() {
               {
                 q: "Are children welcome?",
                 a: "We love your little ones! However, this event is adults-only.",
+              },
+              {
+                q: "Can I bring a plus one?",
+                a: "We would love to meet your favorite people (even though that's us), but unfortunately due to capacity limitions, no plus one's are allowed unless we have directly specified it. \n Please RSVP to see whether you can bring an additional guest!",
               },
               {
                 q: "Can I take photos during the ceremony?",
