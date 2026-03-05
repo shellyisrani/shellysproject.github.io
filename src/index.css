@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer utilities {
-  .object-bottom-center {
-    object-position: center bottom !important;
-  }
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
