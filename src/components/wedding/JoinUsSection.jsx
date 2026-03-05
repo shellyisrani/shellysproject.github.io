@@ -8,10 +8,17 @@ export default function JoinUsSection() {
     <section className="relative w-full">
       {/* Image with overlay text */}
       <div className="relative h-[70vh] md:h-[80vh] overflow-hidden">
+        {/* Mobile image */}
         <img
-          src="/images/join_us.jpg"
+          src="/images/join_us_mobile.jpg"
           alt="Wedding celebration"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover md:hidden"
+        />
+        {/* Desktop image */}
+        <img
+          src="/images/join_us_desktop.jpg"
+          alt="Wedding celebration"
+          className="hidden md:block absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40" />
 
