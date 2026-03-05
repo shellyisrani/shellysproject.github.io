@@ -40,7 +40,16 @@ jobs:
           ls -la dist/
           if [ -f "dist/index.html" ]; then
             echo "✓ index.html exists"
-            head -20 dist/index.html
+            echo "First 30 lines of built index.html:"
+            head -30 dist/index.html
+            echo ""
+            echo "Checking for .jsx references (should be none):"
+            if grep -q "\.jsx" dist/index.html; then
+              echo "⚠ WARNING: Built index.html still contains .jsx references!"
+              exit 1
+            else
+              echo "✓ No .jsx references found in built HTML"
+            fi
           else
             echo "✗ index.html missing!"
             exit 1
