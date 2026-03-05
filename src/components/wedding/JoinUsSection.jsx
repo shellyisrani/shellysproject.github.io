@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -14,7 +15,7 @@ export default function JoinUsSection() {
         />
         <div className="absolute inset-0 bg-black/40" />
 
-        <div className="relative z-10 h-full flex flex-col items-center justify-center text-white px-6">
+        <div className="relative z-10 h-full flex flex-col items-center justify-start text-white px-6 pt-24">
           <p
             className="text-xs md:text-sm tracking-[0.3em] uppercase opacity-90 mb-4"
             style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
