@@ -55,11 +55,6 @@ jobs:
             exit 1
           fi
       
-      - name: Create .nojekyll file
-        run: |
-          touch dist/.nojekyll
-          echo "✓ Created .nojekyll to disable Jekyll processing"
-      
       - name: Verify CNAME exists
         run: |
           if [ -f "dist/CNAME" ]; then
