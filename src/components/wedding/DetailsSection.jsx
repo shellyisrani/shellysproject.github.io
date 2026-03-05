@@ -100,7 +100,7 @@ export default function DetailsSection() {
         {/* Right - Image */}
         <div className="relative min-h-[50vh] lg:min-h-full order-1 lg:order-2">
           <img
-            src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=1200&q=80"
+            src="/images/venue-image.jpg"
             alt="Wedding venue"
             className="absolute inset-0 w-full h-full object-cover"
           />

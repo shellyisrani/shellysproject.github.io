@@ -8,7 +8,7 @@ export default function JoinUsSection() {
       {/* Image with overlay text */}
       <div className="relative h-[70vh] md:h-[80vh] overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1920&q=80"
+          src="/images/join-us-image.jpg"
           alt="Wedding celebration"
           className="absolute inset-0 w-full h-full object-cover"
         />

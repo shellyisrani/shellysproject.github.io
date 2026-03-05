@@ -31,7 +31,7 @@ export default function OurStory() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="aspect-[4/5] overflow-hidden">
             <img
-              src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80"
+              src="/images/story-first-meeting.jpg"
               alt="First meeting"
               className="w-full h-full object-cover"
             />
@@ -82,7 +82,7 @@ export default function OurStory() {
           </div>
           <div className="aspect-[4/5] overflow-hidden order-1 md:order-2">
             <img
-              src="https://images.unsplash.com/photo-1529634597503-139d3726fed5?w=800&q=80"
+              src="/images/story-journey.jpg"
               alt="Journey together"
               className="w-full h-full object-cover"
             />
@@ -93,7 +93,7 @@ export default function OurStory() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="aspect-[4/5] overflow-hidden">
             <img
-              src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800&q=80"
+              src="/images/story-proposal.jpg"
               alt="The proposal"
               className="w-full h-full object-cover"
             />
