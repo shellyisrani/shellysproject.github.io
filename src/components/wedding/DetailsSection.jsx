@@ -102,7 +102,7 @@ export default function DetailsSection() {
           <img
             src="/images/when_where.jpg"
             alt="Wedding venue"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover object-top"
           />
         </div>
       </div>
