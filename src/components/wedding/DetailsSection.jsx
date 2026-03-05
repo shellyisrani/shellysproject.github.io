@@ -98,17 +98,13 @@ export default function DetailsSection() {
         </div>
 
         {/* Right - Image */}
-        <div className="relative min-h-[50vh] lg:min-h-full order-1 lg:order-2 overflow-hidden">
-          <img
-            src="/images/when_where.jpg"
-            alt="Wedding venue"
-            className="w-full h-full object-cover"
-            style={{ 
-              objectPosition: 'center 100%',
-              height: '100%',
-              width: '100%'
-            }}
-          />
+        <div 
+          className="relative min-h-[50vh] lg:min-h-full order-1 lg:order-2 overflow-hidden bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: 'url(/images/when_where.jpg)',
+            backgroundPosition: 'center bottom'
+          }}
+        >
         </div>
       </div>
     </section>
