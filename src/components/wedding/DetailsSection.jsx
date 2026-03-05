@@ -98,14 +98,11 @@ export default function DetailsSection() {
         </div>
 
         {/* Right - Image */}
-        <div className="relative min-h-[50vh] lg:min-h-full order-1 lg:order-2 overflow-hidden">
+        <div className="relative min-h-[50vh] lg:min-h-full order-1 lg:order-2">
           <img
             src="/images/when_where.jpg"
             alt="Wedding venue"
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ 
-              objectPosition: '50% 100%'
-            }}
           />
         </div>
       </div>
