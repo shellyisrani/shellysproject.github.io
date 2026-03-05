@@ -102,11 +102,9 @@ export default function DetailsSection() {
           <img
             src="/images/when_where.jpg"
             alt="Wedding venue"
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
             style={{ 
-              objectPosition: 'center 100%',
-              height: '100%',
-              width: '100%'
+              objectPosition: '50% 100%'
             }}
           />
         </div>
