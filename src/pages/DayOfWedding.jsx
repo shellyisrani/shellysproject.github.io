@@ -71,10 +71,11 @@ export default function DayOfWedding() {
             {[
               { time: "3:30 PM", event: "Guests Arrive & are Seated" },
               { time: "4:00 PM", event: "Ceremony Begins" },
-              { time: "4:45 PM", event: "Cocktail Hour" },
-              { time: "6:00 PM", event: "Reception & Dinner" },
-              { time: "9:00 PM", event: "Dancing & Celebration" },
-              { time: "11:00 PM", event: "Grand Exit" },
+              { time: "4:30 PM", event: "Cocktail Hour" },
+              { time: "5:45 PM", event: "Dinner" },
+              { time: "7:00 PM", event: "Dessert & Reception" },
+              { time: "10:30 PM", event: "Second Dessert" },
+              { time: "11:30 PM", event: "Bedtime" },
             ].map((item, i) => (
               <div key={i} className="flex gap-8 py-5 border-b border-[#e8e6e3]">
                 <span
@@ -102,23 +103,39 @@ export default function DayOfWedding() {
           <h2 className="text-3xl md:text-4xl font-light text-[#2c2c2c] mb-10" style={{ fontFamily: "var(--font-serif)" }}>
             The Menu
           </h2>
+          <p className="text-xs tracking-[0.3em] uppercase text-[#c9a96e] mb-3" style={{ fontFamily: "var(--font-sans)" }}>
+            From the Cocktail Hour onwards, we will have a full open bar which will include liquor, beer, wine and a variety of non-alcholic drinks.
+            <br />
+            The kitchen at Roxbury is fully nut-free and can accomodate specific allergies or dietary restrictions. Please let us know in the RSVP section if any allergies or restrictions need to be noted down.
+          </p>
           <div className="space-y-10">
             {[
               {
-                course: "Cocktail Hour",
-                items: ["Seasonal Crudité & Dips", "Artisan Cheese Board", "Passed Canapés"],
+                course: "Cocktail Hour (Passed Hors D'Oeuvre's)",
+                items: [
+                  "Mac & Cheese Shooter",
+                  "Fried Chicken Skewers (GF/DF)",
+                  "Butternut Squash Flatbread",
+                  "Vegetable Samosa (GF/DF/VEG)"
+                ],
               },
               {
                 course: "First Course",
-                items: ["Garden Salad with Champagne Vinaigrette", "Roasted Tomato Bisque"],
+                items: ["Cabbage & Carrot Salad w/Tumeric & Lemon Vinaigrette (GF/DF/V)"],
               },
               {
                 course: "Main Course",
-                items: ["Filet Mignon with Truffle Butter", "Pan-Seared Salmon", "Wild Mushroom Risotto (V)"],
+                note: "All entrées are served with garlic naan (gluten-free option available).",
+                items: [
+                  "Palak Paneer (GF/VEG)",
+                  "Aloo Gobi (GF/DF/V)",
+                  "Lamb Vindaloo (GF)",
+                  "Butter Chicken (GF)"
+                ],
               },
               {
                 course: "Dessert",
-                items: ["Wedding Cake", "Dessert Station"],
+                items: ["Wedding Cake", "Seasonal Fruit & Cream"],
               },
             ].map((course, i) => (
               <div key={i}>
@@ -157,19 +174,19 @@ export default function DayOfWedding() {
             {[
               {
                 q: "What is the dress code?",
-                a: "Black tie optional. We encourage guests to dress to impress — think formal gowns, suits, or cocktail attire.",
-              },
-              {
-                q: "Is there parking at the venue?",
-                a: "Yes, complimentary valet parking will be available for all guests.",
-              },
-              {
-                q: "Are children welcome?",
-                a: "We love your little ones! Children are welcome at the ceremony. The reception is adults-only.",
+                a: "No black or red is allowed! Exceptions will be made for shoes. \n Black tie preferred. We encourage guests to dress to impress — think formal gowns, suits, or cocktail attire.",
               },
               {
                 q: "Will there be transportation?",
-                a: "Shuttle service will be provided between select hotels and the venue. Details will be shared closer to the date.",
+                a: "Shuttle service will be provided between select hotels and the venue. Details will be shared closer to the date. Due to the location of the venue, rideshare services may take a while to come or may not be available at all.",
+              },
+              {
+                q: "Is there parking at the venue?",
+                a: "Yes, but parking is limited. If you prefer to not use the complimentary shuttle, please let us know so we can keep track of parking availiblity.",
+              },
+              {
+                q: "Are children welcome?",
+                a: "We love your little ones! However, this event is adults-only.",
               },
               {
                 q: "Can I take photos during the ceremony?",

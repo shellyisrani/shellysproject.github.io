@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { MapPin, Clock, Calendar } from "lucide-react";
 
@@ -80,10 +81,16 @@ export default function DetailsSection() {
                   className="text-2xl text-[#2c2c2c] font-light mb-2"
                   style={{ fontFamily: "var(--font-serif)" }}
                 >
-                  The Wedding Venue
+                  Roxbury Barn & Estate
+                </p>
+                <p
+                  className="text-base text-[#6b6b6b] mb-4"
+                  style={{ fontFamily: "var(--font-sans)" }}
+                >
+                  615 Co Rd 41, Roxbury, NY 12474
                 </p>
                 <a
-                  href="https://www.google.com/maps"
+                  href="https://maps.app.goo.gl/jhLa4WTGhErdWxzX9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-[#c9a96e] hover:text-[#b8944f] transition-colors"
