@@ -142,7 +142,7 @@ export default function DayOfWedding() {
                       className="text-[#2c2c2c] text-sm flex items-center gap-3"
                       style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
                     >
-                      <span className="text-[#c9a96e] w-4 shrink-0">—</span>
+                      <span className="text-[#c9a96e] mt-1">—</span>
                       {item}
                     </li>
                   ))}
