@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { MapPin, Phone, Globe } from "lucide-react";
 import HomeButton from "@/components/wedding/HomeButton";
@@ -66,7 +67,7 @@ export default function TravelAndStay() {
             The venue is easily accessible by car and is approximately 30 minutes from the nearest airport. We recommend arriving on Friday to settle in and enjoy the area before the big day.
           </p>
           <a
-            href="https://www.google.com/maps"
+            href="https://maps.app.goo.gl/jhLa4WTGhErdWxzX9"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 px-8 py-3 bg-[#2c2c2c] text-white text-xs tracking-[0.2em] uppercase hover:bg-[#1a1a1a] transition-all duration-300"

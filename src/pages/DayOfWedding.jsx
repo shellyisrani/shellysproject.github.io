@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useRef } from "react";
 import HomeButton from "@/components/wedding/HomeButton";
 
@@ -141,7 +142,7 @@ export default function DayOfWedding() {
                       className="text-[#2c2c2c] text-sm flex items-center gap-3"
                       style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
                     >
-                      <span className="text-[#c9a96e] w-4 shrink-0">—</span>
+                      <span className="text-[#c9a96e] mt-1">—</span>
                       {item}
                     </li>
                   ))}
@@ -163,15 +164,7 @@ export default function DayOfWedding() {
             {[
               {
                 q: "What is the dress code?",
-                a: (
-                  <>
-                    <strong className="font-semibold text-[#2c2c2c]">
-                      No black or red is allowed!
-                    </strong>{" "}
-                    Exceptions will be made for shoes. <br/>
-                    Black tie preferred. We encourage guests to dress to impress — think formal gowns, suits, or cocktail attire.
-                  </>
-                ),
+                a: "No black or red is allowed! Exceptions will be made for shoes. \n Black tie preferred. We encourage guests to dress to impress — think formal gowns, suits, or cocktail attire.",
               },
               {
                 q: "When should I RSVP by?",
@@ -222,7 +215,7 @@ export default function DayOfWedding() {
                   {item.q}
                 </h3>
                 <p
-                  className="text-[#2c2c2c] text-sm leading-relaxed"
+                  className="text-[#2c2c2c] opacity-60 text-sm leading-relaxed"
                   style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
                 >
                   {item.a}

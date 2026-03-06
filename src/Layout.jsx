@@ -100,6 +100,21 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Page Content */}
       <main>{children}</main>
+
+      {/* RSVP Box - Show on all pages except Home */}
+      {!isHome && (
+        <div className="bg-[#2c2c2c] py-16">
+          <div className="flex justify-center">
+            <Link
+              to={createPageUrl("RSVP")}
+              className="px-12 py-4 bg-[#2c2c2c] border-2 border-white text-white text-xs tracking-[0.25em] uppercase hover:bg-white hover:text-[#2c2c2c] transition-all duration-300"
+              style={{ fontFamily: "var(--font-sans)" }}
+            >
+              RSVP
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
