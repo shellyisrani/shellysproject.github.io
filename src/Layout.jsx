@@ -64,7 +64,11 @@ export default function Layout({ children, currentPageName }) {
           {/* RSVP Button */}
           <Link
             to={createPageUrl("RSVP")}
-            className="hidden md:block px-6 py-2.5 bg-white text-[#2c2c2c] text-xs tracking-[0.2em] uppercase transition-all duration-300 hover:bg-gray-100"
+            className={`hidden md:block px-12 py-4 text-xs tracking-[0.25em] uppercase transition-all duration-300 ${
+              isHome 
+                ? 'bg-white text-[#2c2c2c] hover:bg-gray-100' 
+                : 'bg-[#2c2c2c] text-white hover:bg-[#1a1a1a]'
+            }`}
             style={{ fontFamily: "var(--font-sans)" }}
           >
             RSVP
