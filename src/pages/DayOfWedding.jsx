@@ -142,7 +142,7 @@ export default function DayOfWedding() {
                       className="text-[#2c2c2c] text-sm flex items-center gap-3"
                       style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
                     >
-                      <span className="text-[#c9a96e] mt-1">—</span>
+                      <span className="text-[#c9a96e] w-4 shrink-0">—</span>
                       {item}
                     </li>
                   ))}
@@ -215,7 +215,7 @@ export default function DayOfWedding() {
                   {item.q}
                 </h3>
                 <p
-                  className="text-[#2c2c2c] opacity-60 text-sm leading-relaxed"
+                  className="text-[#2c2c2c] text-sm leading-relaxed"
                   style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
                 >
                   {item.a}
