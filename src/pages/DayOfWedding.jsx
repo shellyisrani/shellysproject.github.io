@@ -215,7 +215,7 @@ export default function DayOfWedding() {
                   {item.q}
                 </h3>
                 <p
-                  className="text-[#2c2c2c] opacity-60 text-sm leading-relaxed"
+                  className="text-[#2c2c2c] text-sm leading-relaxed"
                   style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
                 >
                   {item.a}
