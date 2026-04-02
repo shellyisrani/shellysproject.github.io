@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import HomeButton from "@/components/wedding/HomeButton";
 
@@ -27,95 +28,39 @@ export default function OurStory() {
 
       {/* Timeline */}
       <div className="max-w-4xl mx-auto px-6 pb-28 space-y-24">
-        {/* First Meeting */}
+        {/* Out Story Paragraphs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="aspect-[4/5] overflow-hidden">
             <img
-              src="/images/story-first-meeting.jpg"
-              alt="First meeting"
+              src="/images/our_story.jpg"
+              alt="Our Story"
               className="w-full h-full object-cover"
             />
           </div>
           <div>
             <p
-              className="text-xs tracking-[0.25em] uppercase text-[#c9a96e] mb-3"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              The Beginning
-            </p>
-            <h2
-              className="text-3xl md:text-4xl font-light text-[#2c2c2c] mb-6"
-              style={{ fontFamily: "var(--font-serif)" }}
-            >
-              When We First Met
-            </h2>
-            <p
               className="text-[#2c2c2c] leading-relaxed opacity-70"
               style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "0.9rem" }}
             >
-              It was one of those ordinary days that turned into something extraordinary. We met by chance, and from the very first conversation, we knew something special was unfolding. The laughter came easy, the silence felt comfortable, and the world seemed to slow down just for us.
+              Kerry and Shelly’s story started the way many modern love stories do: with a match on Hinge in 2018. After months of canceling plans to meet up, the two met in downtown Manhattan for their first date at the (now closed) Ghost Donkey. What began as a simple conversation quickly turned into something much more meaningful, and the two have been inseparable since.
             </p>
-          </div>
-        </div>
-
-        {/* The Journey */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div className="order-2 md:order-1">
             <p
-              className="text-xs tracking-[0.25em] uppercase text-[#c9a96e] mb-3"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              The Journey
-            </p>
-            <h2
-              className="text-3xl md:text-4xl font-light text-[#2c2c2c] mb-6"
-              style={{ fontFamily: "var(--font-serif)" }}
-            >
-              Growing Together
-            </h2>
-            <p
-              className="text-[#2c2c2c] leading-relaxed opacity-70"
+              className="mt-5 text-[#2c2c2c] leading-relaxed opacity-70"
               style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "0.9rem" }}
             >
-              From late-night conversations to early-morning adventures, every moment together has been a treasure. We've traveled, laughed, cried, and grown in ways we never thought possible. Through every season of life, our love has only deepened.
+              Six months in, they made the practical decision of moving in together to avoid long distance after graduating from college. Shortly after, in desperate need of another significant life change, they adopted their first cat, Florence. About six months later, they added a second cat to the mix, Mozart (just in time for a global pandemic). Suddenly, after just one year together, they were together 24/7 with two cats who had no respect for personal space. 
             </p>
-          </div>
-          <div className="aspect-[4/5] overflow-hidden order-1 md:order-2">
-            <img
-              src="/images/story-journey.jpg"
-              alt="Journey together"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-
-        {/* The Proposal */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div className="aspect-[4/5] overflow-hidden">
-            <img
-              src="/images/story-proposal.jpg"
-              alt="The proposal"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
             <p
-              className="text-xs tracking-[0.25em] uppercase text-[#c9a96e] mb-3"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              The Question
-            </p>
-            <h2
-              className="text-3xl md:text-4xl font-light text-[#2c2c2c] mb-6"
-              style={{ fontFamily: "var(--font-serif)" }}
-            >
-              The Proposal
-            </h2>
-            <p
-              className="text-[#2c2c2c] leading-relaxed opacity-70"
+              className="mt-5 text-[#2c2c2c] leading-relaxed opacity-70"
               style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "0.9rem" }}
             >
-              And then came the moment that changed everything. With hearts full of love and eyes full of happy tears, we said yes to forever. Now we're counting down the days until we get to celebrate with all of you.
+              Over the many years together, Kerry and Shelly learned how to grow both in a long-term relationship and as individuals. Placing an importance on professional development, they have successfully acquired their dream careers: an attorney and a data engineer. They also prioritize traveling, having now visited 14 countries together. They have so many amazing memories to look back on in the last 7 years and so many new ones to look forward to.
+            </p>
+            <p
+              className="mt-5 text-[#2c2c2c] leading-relaxed opacity-70"
+              style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "0.9rem" }}
+            >
+              In 2024, Kerry and Shelly welcomed their third child, Iris. Through it all, they’ve built a life (and a zoo) full of love, resilience, and just the right amount of chaos. Now, they can’t wait to celebrate the next chapter with all of you.
             </p>
           </div>
         </div>

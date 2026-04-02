@@ -206,7 +206,7 @@ export default function RSVP() {
         {(name === "andrew hof" || name === "sean hernandez") && (
           <div className="mt-4">
             <img
-              src="https://giphy.com/gifs/bollytc-bollywood-thumkas-26ybw2WdicjAq1aco"
+              src="/images/celebration.gif"
               alt="Celebration"
               className="mx-auto rounded-md"
             />
