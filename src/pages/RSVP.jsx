@@ -166,7 +166,7 @@ export default function RSVP() {
     setPartyDetails((prev) => prev.map((m, i) => (i === idx ? { ...m, [field]: value } : m)));
   };
 
-  const hasPartyOptions = partyGuests.length > 1 || Boolean(guestRecord?.has_plus_one);
+  const hasPartyOptions = partyGuests.length > 1; // only treat as party UI when >1 members
   const showMainDietaryField = attending === true && !hasPartyOptions;
 
   return (
