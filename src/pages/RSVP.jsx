@@ -408,29 +408,30 @@ export default function RSVP() {
                 </div>
                 {declineScope === "additional" && (
                   <div className="mt-4 space-y-3">
-                    {partyGuests.map((m) => {
-                      const isSelf = m.id === guestRecord?.id;
-                      const checked = isSelf ? true : declineSelectedIds.includes(m.id);
-                      return (
-                        <label key={m.id} className="flex items-center gap-3 text-sm text-[#2c2c2c]">
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            disabled={isSelf}
-                            onChange={(e) => {
-                              if (isSelf) return;
-                              setDeclineSelectedIds((prev) =>
-                                e.target.checked ? [...prev, m.id] : prev.filter((id) => id !== m.id)
-                              );
-                            }}
-                          />
-                          <span style={{ fontFamily: "var(--font-serif)" }}>
-                            {m.full_name}
-                            {isSelf ? " (You)" : ""}
-                          </span>
-                        </label>
-                      );
-                    })}
+                    {/* Always include a self row that is checked and disabled */}
+                    <label className="flex items-center gap-3 text-sm text-[#2c2c2c]">
+                      <input type="checkbox" checked readOnly disabled />
+                      <span style={{ fontFamily: "var(--font-serif)" }}>Myself</span>
+                    </label>
+                    {partyGuests
+                      .filter((m) => m.id !== guestRecord?.id)
+                      .map((m) => {
+                        const checked = declineSelectedIds.includes(m.id);
+                        return (
+                          <label key={m.id} className="flex items-center gap-3 text-sm text-[#2c2c2c]">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                setDeclineSelectedIds((prev) =>
+                                  e.target.checked ? [...prev, m.id] : prev.filter((id) => id !== m.id)
+                                );
+                              }}
+                            />
+                            <span style={{ fontFamily: "var(--font-serif)" }}>{m.full_name}</span>
+                          </label>
+                        );
+                      })}
                   </div>
                 )}
               </div>
