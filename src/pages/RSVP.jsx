@@ -23,6 +23,7 @@ export default function RSVP() {
   const [plusOneDietary, setPlusOneDietary] = useState("");
   const [partyRsvps, setPartyRsvps] = useState([]);
   const [partyDetails, setPartyDetails] = useState([]);
+  const [plusOneError, setPlusOneError] = useState("");
 
   const handleLookup = async (e) => {
     e.preventDefault();
@@ -87,6 +88,13 @@ export default function RSVP() {
     e.preventDefault();
     setLoading(true);
     try {
+      // Validate plus one name if selected
+      if (attending === true && guestRecord?.has_plus_one && wantsPlusOne === true && !plusOneName.trim()) {
+        setPlusOneError("Please provide your plus one’s name.");
+        setLoading(false);
+        return;
+      }
+      setPlusOneError("");
       // Update phone and main guest message/dietary on the selected guest
       const plusOneNote =
         guestRecord?.has_plus_one
@@ -168,6 +176,53 @@ export default function RSVP() {
 
   const hasPartyOptions = partyGuests.length > 1; // only treat as party UI when >1 members
   const showMainDietaryField = attending === true && !hasPartyOptions;
+
+  const getGreeting = (fullName) => {
+    const name = (fullName || "").trim().toLowerCase();
+    if (name === "rajesh israni") return "Hi Papa!";
+    if (name === "priti sehrawat") return "Hi Mama!";
+    if (name === "divya israni") return "hiii Divya";
+    if (name === "diya israni") return "hi Diyu :)";
+    if (name === "nabhanya nebs" || name === "nabhanya neb") return "hey nebs!";
+    if (name === "ryan ashe") return "Hey Señor Salmon 🐟";
+    if (name === "wendy ashe") return "Hey Wendy aka Wendella 😈";
+    if (name === "paul sampson") return "Welcome, Paul Sampson 🐦";
+    return `Welcome, ${fullName}`;
+  };
+
+  const AcceptanceExtras = () => {
+    const name = (guestRecord?.full_name || "").trim().toLowerCase();
+    const inPartyEight = partyGuests.some((g) => g.id) && guestRecord?.party_id === 8;
+    return (
+      <>
+        {name === "steve ashe" && (
+          <p
+            className="text-[#2c2c2c] opacity-80 text-sm leading-relaxed mt-3"
+            style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
+          >
+            Can&apos;t wait to have you officially officiate the wedding Steve!
+          </p>
+        )}
+        {(name === "andrew hof" || name === "sean hernandez") && (
+          <div className="mt-4">
+            <img
+              src="https://giphy.com/gifs/bollytc-bollywood-thumkas-26ybw2WdicjAq1aco"
+              alt="Celebration"
+              className="mx-auto rounded-md"
+            />
+          </div>
+        )}
+        {inPartyEight && (
+          <p
+            className="text-[#2c2c2c] opacity-80 text-sm leading-relaxed mt-3"
+            style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
+          >
+            Can&apos;t wait to see my favorite kiwi&apos;s!
+          </p>
+        )}
+      </>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#faf9f7] pt-24 pb-20">
@@ -253,7 +308,7 @@ export default function RSVP() {
               </button>
             </div>
             <p className="text-center text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)", fontSize: "1.3rem" }}>
-              Welcome, {guestRecord?.full_name}
+              {getGreeting(guestRecord?.full_name)}
             </p>
 
             {isReturningGuest && (
@@ -279,7 +334,10 @@ export default function RSVP() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setUpdateMode("details")}
+                    onClick={() => {
+                      setUpdateMode("details");
+                      setAttending(null);
+                    }}
                     className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
                       updateMode === "details"
                         ? "bg-[#2c2c2c] text-white"
@@ -490,6 +548,11 @@ export default function RSVP() {
                           onChange={setPlusOneName}
                           placeholder="Full name"
                         />
+                        {plusOneError && (
+                          <p className="text-red-500 text-xs" style={{ fontFamily: "var(--font-sans)" }}>
+                            {plusOneError}
+                          </p>
+                        )}
                         <Field
                           label="Plus One Dietary Restrictions"
                           value={plusOneDietary}
@@ -514,6 +577,7 @@ export default function RSVP() {
                         <div className="flex items-center justify-between mb-3">
                           <span style={{ fontFamily: "var(--font-serif)", fontSize: "1rem", color: "#2c2c2c" }}>
                             {member.name}
+                            {member.id === guestRecord?.id ? " (You)" : ""}
                           </span>
                           <div className="flex gap-2">
                             {(member.id === guestRecord?.id ? ["Attending", "Declining"] : ["Attending", "Declining", "Unsure"]).map((label) => (
@@ -594,6 +658,7 @@ export default function RSVP() {
                 ? "Your RSVP has been received. We look forward to sharing this special day with you."
                 : "Thank you for letting us know. We hope to celebrate together soon."}
             </p>
+            {attending && <AcceptanceExtras />}
             <div className="w-16 h-px bg-[#c9a96e] mx-auto" />
           </div>
         )}
