@@ -11,9 +11,13 @@ export default function RSVP() {
   const [loading, setLoading] = useState(false);
 
   const [attending, setAttending] = useState(null);
+  const [declineScope, setDeclineScope] = useState("self"); // self | party
   const [phone, setPhone] = useState("");
   const [dietary, setDietary] = useState("");
   const [message, setMessage] = useState("");
+  const [wantsPlusOne, setWantsPlusOne] = useState(null);
+  const [plusOneName, setPlusOneName] = useState("");
+  const [plusOneDietary, setPlusOneDietary] = useState("");
   const [partyRsvps, setPartyRsvps] = useState([]);
 
   const handleLookup = async (e) => {
@@ -63,10 +67,16 @@ export default function RSVP() {
     setLoading(true);
     try {
       // Update phone and main guest message/dietary on the selected guest
+      const plusOneNote =
+        guestRecord?.has_plus_one
+          ? wantsPlusOne
+            ? `\nPlus One: ${plusOneName || "Name not provided"}${plusOneDietary ? ` (Dietary: ${plusOneDietary})` : ""}`
+            : "\nPlus One: Declined"
+          : "";
       const mainGuestPayload = {
         phone: phone || null,
         dietary_restrictions: dietary || null,
-        message: message || null,
+        message: `${message || ""}${plusOneNote}`.trim() || null,
         attending: attending === null ? null : attending,
         submitted_at: new Date().toISOString(),
       };
@@ -88,8 +98,8 @@ export default function RSVP() {
         );
       }
 
-      // If declining, mark all in party as declining (optional; keep simple here)
-      if (attending === false && partyGuests.length > 0) {
+      // If declining for entire party, mark all party members as declining
+      if (attending === false && declineScope === "party" && partyGuests.length > 0) {
         await Promise.all(
           partyGuests.map((g) =>
             supabase
@@ -211,7 +221,10 @@ export default function RSVP() {
               <div className="flex gap-4">
                 <button
                   type="button"
-                  onClick={() => setAttending(true)}
+                  onClick={() => {
+                    setAttending(true);
+                    setDeclineScope("self");
+                  }}
                   className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
                     attending === true ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
                   }`}
@@ -232,10 +245,104 @@ export default function RSVP() {
               </div>
             </div>
 
+            {attending === false && partyGuests.length > 1 && (
+              <div>
+                <p
+                  className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-4 text-center"
+                  style={{ fontFamily: "var(--font-sans)" }}
+                >
+                  Who are you declining for?
+                </p>
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setDeclineScope("self")}
+                    className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                      declineScope === "self"
+                        ? "bg-[#2c2c2c] text-white"
+                        : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                    }`}
+                    style={{ fontFamily: "var(--font-sans)" }}
+                  >
+                    Just Me
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeclineScope("party")}
+                    className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                      declineScope === "party"
+                        ? "bg-[#2c2c2c] text-white"
+                        : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                    }`}
+                    style={{ fontFamily: "var(--font-sans)" }}
+                  >
+                    Whole Party
+                  </button>
+                </div>
+              </div>
+            )}
+
             {attending === true && (
               <>
                 <Field label="Phone Number" value={phone} onChange={setPhone} placeholder="(555) 000-0000" />
                 <Field label="Dietary Restrictions" value={dietary} onChange={setDietary} placeholder="None" />
+
+                {guestRecord?.has_plus_one && (
+                  <div>
+                    <p
+                      className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-4"
+                      style={{ fontFamily: "var(--font-sans)" }}
+                    >
+                      We&apos;re inviting you to have a plus one! Would you like to bring a guest with you?
+                    </p>
+                    <div className="flex gap-4 mb-4">
+                      <button
+                        type="button"
+                        onClick={() => setWantsPlusOne(true)}
+                        className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                          wantsPlusOne === true
+                            ? "bg-[#2c2c2c] text-white"
+                            : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                        }`}
+                        style={{ fontFamily: "var(--font-sans)" }}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setWantsPlusOne(false);
+                          setPlusOneName("");
+                          setPlusOneDietary("");
+                        }}
+                        className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                          wantsPlusOne === false
+                            ? "bg-[#2c2c2c] text-white"
+                            : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                        }`}
+                        style={{ fontFamily: "var(--font-sans)" }}
+                      >
+                        No
+                      </button>
+                    </div>
+                    {wantsPlusOne === true && (
+                      <div className="space-y-4">
+                        <Field
+                          label="Plus One Name"
+                          value={plusOneName}
+                          onChange={setPlusOneName}
+                          placeholder="Full name"
+                        />
+                        <Field
+                          label="Plus One Dietary Restrictions"
+                          value={plusOneDietary}
+                          onChange={setPlusOneDietary}
+                          placeholder="None"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {partyRsvps.length > 0 && (
                   <div>
