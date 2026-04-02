@@ -39,25 +39,25 @@ export default function OurStory() {
         {/* Centered paragraphs */}
         <div className="max-w-2xl mx-auto text-center">
           <p
-            className="text-[#2c2c2c] text-sm leading-relaxed opacity-70"
+            className="text-[#2c2c2c] text-sm leading-relaxed"
             style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
           >
             Kerry and Shelly’s story started the way many modern love stories do: with a match on Hinge in 2018. After months of canceling plans to meet up, the two met in downtown Manhattan for their first date at the (now closed) Ghost Donkey. What began as a simple conversation quickly turned into something much more meaningful, and the two have been inseparable since.
           </p>
           <p
-            className="mt-5 text-[#2c2c2c] text-sm leading-relaxed opacity-70"
+            className="text-[#2c2c2c] text-sm leading-relaxed"
             style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
           >
             Six months in, they made the practical decision of moving in together to avoid long distance after graduating from college. Shortly after, in desperate need of another significant life change, they adopted their first cat, Florence. About six months later, they added a second cat to the mix, Mozart (just in time for a global pandemic). Suddenly, after just one year together, they were together 24/7 with two cats who had no respect for personal space.
           </p>
           <p
-            className="mt-5 text-[#2c2c2c] text-sm leading-relaxed opacity-70"
+            className="text-[#2c2c2c] text-sm leading-relaxed"
             style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
           >
             Over the years together, Kerry and Shelly learned how to grow both in a long-term relationship and as individuals. Placing an importance on professional development, they have successfully acquired their dream careers: an attorney and a data wizard. They also prioritize traveling, having now visited 14 countries together. They have so many amazing memories to look back on in the last 7 years and so many new ones to look forward to.
           </p>
           <p
-            className="mt-5 text-[#2c2c2c] text-sm leading-relaxed opacity-70"
+            className="text-[#2c2c2c] text-sm leading-relaxed"
             style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
           >
             In 2024, shortly after getting engaged, Kerry and Shelly welcomed their third child, Iris. Through it all, they’ve built a life (and a zoo) full of love, resilience, and just the right amount of chaos. Now, they can’t wait to celebrate the next chapter with all of you.

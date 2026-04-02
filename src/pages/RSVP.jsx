@@ -205,13 +205,12 @@ export default function RSVP() {
           </p>
         )}
         {(name === "andrew hof" || name === "sean hernandez") && (
-          <div className="mt-4">
-            <img
-              src="/images/andrew-sean.gif"
-              alt="Celebration"
-              className="mx-auto rounded-md"
-            />
-          </div>
+          <p
+            className="text-[#2c2c2c] opacity-80 text-base md:text-lg leading-relaxed mt-3"
+            style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
+          >
+            Let&apos;s not forget to do this at the wedding 💃
+          </p>
         )}
         {inPartyEight && (
           <p
@@ -660,6 +659,15 @@ export default function RSVP() {
                 : "Thank you for letting us know. We hope to celebrate together soon."}
             </p>
             {attending && <AcceptanceExtras />}
+            {attending && (
+              <div className="mt-4">
+                <img
+                  src="/images/andrew-sean.gif"
+                  alt="Celebration"
+                  className="mx-auto rounded-md"
+                />
+              </div>
+            )}
             <div className="w-16 h-px bg-[#c9a96e] mx-auto" />
           </div>
         )}
