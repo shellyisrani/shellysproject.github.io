@@ -24,7 +24,7 @@ export default function HeroSection() {
       <div className="relative z-10 h-full flex flex-col justify-center text-white px-10 md:px-16 lg:px-24 max-w-xl">
         {/* Top text */}
         <p
-          className="text-xs md:text-sm tracking-[0.35em] uppercase mb-8 opacity-100 font-semibold"
+          className="text-xs md:text-sm tracking-[0.35em] uppercase mb-8 opacity-90"
           style={{ fontFamily: "var(--font-sans)" }}
         >
           We're Getting Married!
@@ -40,7 +40,7 @@ export default function HeroSection() {
 
         {/* Save the Date */}
         <p
-          className="mt-6 text-sm md:text-base tracking-[0.2em] uppercase opacity-100 font-semibold"
+          className="mt-6 text-sm md:text-base tracking-[0.2em] uppercase opacity-80"
           style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
         >
           Save the Date
@@ -59,7 +59,7 @@ export default function HeroSection() {
       {/* The Details with arrow - truly centered */}
       <button
         onClick={scrollToDetails}
-        className="absolute bottom-6 left-0 right-0 flex flex-col items-center gap-2 cursor-pointer group z-10"
+        className="absolute bottom- left-0 right-0 flex flex-col items-center gap-2 cursor-pointer group z-10"
       >
         <span
           className="text-xs tracking-[0.25em] uppercase text-white opacity-80 group-hover:opacity-100 transition-opacity"
