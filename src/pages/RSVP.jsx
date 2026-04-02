@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from "react";
 import HomeButton from "@/components/wedding/HomeButton";
 import { supabase } from "@/lib/supabaseClient";
@@ -206,7 +207,7 @@ export default function RSVP() {
         {(name === "andrew hof" || name === "sean hernandez") && (
           <div className="mt-4">
             <img
-              src="/images/celebration.gif"
+              src="/images/andrew-sean.gif"
               alt="Celebration"
               className="mx-auto rounded-md"
             />
