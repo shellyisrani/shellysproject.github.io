@@ -9,9 +9,12 @@ export default function RSVP() {
   const [partyGuests, setPartyGuests] = useState([]);
   const [lookupError, setLookupError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isReturningGuest, setIsReturningGuest] = useState(false);
+  const [updateMode, setUpdateMode] = useState("rsvp"); // rsvp | details
 
   const [attending, setAttending] = useState(null);
-  const [declineScope, setDeclineScope] = useState("self"); // self | party
+  const [declineScope, setDeclineScope] = useState("self"); // self | additional
+  const [declineSelectedIds, setDeclineSelectedIds] = useState([]); // ids of additional members to decline
   const [phone, setPhone] = useState("");
   const [dietary, setDietary] = useState("");
   const [message, setMessage] = useState("");
@@ -19,6 +22,7 @@ export default function RSVP() {
   const [plusOneName, setPlusOneName] = useState("");
   const [plusOneDietary, setPlusOneDietary] = useState("");
   const [partyRsvps, setPartyRsvps] = useState([]);
+  const [partyDetails, setPartyDetails] = useState([]);
 
   const handleLookup = async (e) => {
     e.preventDefault();
@@ -40,19 +44,36 @@ export default function RSVP() {
         // Load entire party
         const { data: members, error: partyErr } = await supabase
           .from("guests")
-          .select("id, full_name, attending, dietary_restrictions")
+          .select("id, full_name, phone, attending, dietary_restrictions, submitted_at")
           .eq("party_id", guest.party_id)
           .order("full_name");
         if (partyErr) throw partyErr;
 
         setPartyGuests(members || []);
-        const initial = (members || []).map((m) => ({
+        const initial = (members || []).map((m) => {
+          const isSelf = m.id === guest.id;
+          return {
           id: m.id,
           name: m.full_name,
-          attending: m.attending ?? true,
+          response:
+            m.attending === true ? "yes" : m.attending === false ? "no" : isSelf ? "yes" : "unsure",
           dietary_restrictions: m.dietary_restrictions || "",
-        }));
+          };
+        });
         setPartyRsvps(initial);
+        setPartyDetails(
+          (members || []).map((m) => ({
+            id: m.id,
+            name: m.full_name,
+            phone: m.phone || "",
+            dietary_restrictions: m.dietary_restrictions || "",
+          }))
+        );
+        setIsReturningGuest(
+          (members || []).some((m) => m.submitted_at) || guest.attending !== null || Boolean(guest.phone)
+        );
+        setUpdateMode("rsvp");
+        setPhone(guest.phone || "");
         setStep("form");
       } else {
         setLookupError("We couldn't find your name on the guest list. Please check the spelling or contact us.");
@@ -82,6 +103,24 @@ export default function RSVP() {
       };
       await supabase.from("guests").update(mainGuestPayload).eq("id", guestRecord.id);
 
+      // Returning guest editing contact/dietary only
+      if (isReturningGuest && updateMode === "details") {
+        await Promise.all(
+          partyDetails.map((m) =>
+            supabase
+              .from("guests")
+              .update({
+                phone: m.phone || null,
+                dietary_restrictions: m.dietary_restrictions || null,
+                submitted_at: new Date().toISOString(),
+              })
+              .eq("id", m.id)
+          )
+        );
+        setStep("done");
+        return;
+      }
+
       // If attending, update each party member according to selections
       if (attending === true && partyRsvps.length > 0) {
         await Promise.all(
@@ -89,8 +128,8 @@ export default function RSVP() {
             supabase
               .from("guests")
               .update({
-                attending: m.attending,
-                dietary_restrictions: m.attending ? (m.dietary_restrictions || null) : null,
+                attending: m.response === "yes" ? true : m.response === "no" ? false : null,
+                dietary_restrictions: m.response === "yes" ? (m.dietary_restrictions || null) : null,
                 submitted_at: new Date().toISOString(),
               })
               .eq("id", m.id)
@@ -98,10 +137,10 @@ export default function RSVP() {
         );
       }
 
-      // If declining for entire party, mark all party members as declining
-      if (attending === false && declineScope === "party" && partyGuests.length > 0) {
+      // If declining and user selected additional members, mark only those members (not the whole party)
+      if (attending === false && declineScope === "additional" && declineSelectedIds.length > 0) {
         await Promise.all(
-          partyGuests.map((g) =>
+          declineSelectedIds.map((memberId) =>
             supabase
               .from("guests")
               .update({
@@ -109,7 +148,7 @@ export default function RSVP() {
                 dietary_restrictions: null,
                 submitted_at: new Date().toISOString(),
               })
-              .eq("id", g.id)
+              .eq("id", memberId)
           )
         );
       }
@@ -123,6 +162,12 @@ export default function RSVP() {
   const updatePartyMember = (idx, field, value) => {
     setPartyRsvps((prev) => prev.map((m, i) => (i === idx ? { ...m, [field]: value } : m)));
   };
+  const updatePartyDetail = (idx, field, value) => {
+    setPartyDetails((prev) => prev.map((m, i) => (i === idx ? { ...m, [field]: value } : m)));
+  };
+
+  const hasPartyOptions = partyGuests.length > 1 || Boolean(guestRecord?.has_plus_one);
+  const showMainDietaryField = attending === true && !hasPartyOptions;
 
   return (
     <div className="min-h-screen bg-[#faf9f7] pt-24 pb-20">
@@ -199,6 +244,7 @@ export default function RSVP() {
                 onClick={() => {
                   setStep("lookup");
                   setAttending(null);
+                  setUpdateMode("rsvp");
                 }}
                 className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c] opacity-50 hover:opacity-80 transition-opacity"
                 style={{ fontFamily: "var(--font-sans)" }}
@@ -210,7 +256,79 @@ export default function RSVP() {
               Welcome, {guestRecord?.full_name}
             </p>
 
+            {isReturningGuest && (
+              <div>
+                <p
+                  className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-4 text-center"
+                  style={{ fontFamily: "var(--font-sans)" }}
+                >
+                  Welcome back! Are you changing your RSVP or something else?
+                </p>
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setUpdateMode("rsvp")}
+                    className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                      updateMode === "rsvp"
+                        ? "bg-[#2c2c2c] text-white"
+                        : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                    }`}
+                    style={{ fontFamily: "var(--font-sans)" }}
+                  >
+                    Change RSVP
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUpdateMode("details")}
+                    className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                      updateMode === "details"
+                        ? "bg-[#2c2c2c] text-white"
+                        : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                    }`}
+                    style={{ fontFamily: "var(--font-sans)" }}
+                  >
+                    Something Else
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {isReturningGuest && updateMode === "details" && (
+              <div>
+                <p
+                  className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-4"
+                  style={{ fontFamily: "var(--font-sans)" }}
+                >
+                  Update Phone or Dietary Info
+                </p>
+                <div className="space-y-6">
+                  {partyDetails.map((member, idx) => (
+                    <div key={member.id} className="pb-6 border-b border-[#e8e6e3] last:border-0">
+                      <p className="mb-3 text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>
+                        {member.name}
+                      </p>
+                      <div className="space-y-4">
+                        <Field
+                          label="Phone Number"
+                          value={member.phone}
+                          onChange={(value) => updatePartyDetail(idx, "phone", value)}
+                          placeholder="(555) 000-0000"
+                        />
+                        <Field
+                          label="Dietary Restrictions"
+                          value={member.dietary_restrictions}
+                          onChange={(value) => updatePartyDetail(idx, "dietary_restrictions", value)}
+                          placeholder="None"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Attending toggle */}
+            {(!isReturningGuest || updateMode === "rsvp") && (
             <div>
               <p
                 className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-4 text-center"
@@ -224,6 +342,7 @@ export default function RSVP() {
                   onClick={() => {
                     setAttending(true);
                     setDeclineScope("self");
+                  setDeclineSelectedIds([]);
                   }}
                   className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
                     attending === true ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
@@ -234,7 +353,11 @@ export default function RSVP() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setAttending(false)}
+                  onClick={() => {
+                    setAttending(false);
+                    setDeclineScope("self");
+                    setDeclineSelectedIds([]);
+                  }}
                   className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
                     attending === false ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
                   }`}
@@ -244,6 +367,7 @@ export default function RSVP() {
                 </button>
               </div>
             </div>
+            )}
 
             {attending === false && partyGuests.length > 1 && (
               <div>
@@ -268,24 +392,49 @@ export default function RSVP() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setDeclineScope("party")}
+                    onClick={() => setDeclineScope("additional")}
                     className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
-                      declineScope === "party"
+                      declineScope === "additional"
                         ? "bg-[#2c2c2c] text-white"
                         : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
                     }`}
                     style={{ fontFamily: "var(--font-sans)" }}
                   >
-                    Whole Party
+                    Additional Party Members
                   </button>
                 </div>
+                {declineScope === "additional" && (
+                  <div className="mt-4 space-y-3">
+                    {partyGuests
+                      .filter((m) => m.id !== guestRecord?.id)
+                      .map((m) => {
+                        const checked = declineSelectedIds.includes(m.id);
+                        return (
+                          <label key={m.id} className="flex items-center gap-3 text-sm text-[#2c2c2c]">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                setDeclineSelectedIds((prev) =>
+                                  e.target.checked ? [...prev, m.id] : prev.filter((id) => id !== m.id)
+                                );
+                              }}
+                            />
+                            <span style={{ fontFamily: "var(--font-serif)" }}>{m.full_name}</span>
+                          </label>
+                        );
+                      })}
+                  </div>
+                )}
               </div>
             )}
 
-            {attending === true && (
+            {attending === true && (!isReturningGuest || updateMode === "rsvp") && (
               <>
                 <Field label="Phone Number" value={phone} onChange={setPhone} placeholder="(555) 000-0000" />
-                <Field label="Dietary Restrictions" value={dietary} onChange={setDietary} placeholder="None" />
+                {showMainDietaryField && (
+                  <Field label="Dietary Restrictions" value={dietary} onChange={setDietary} placeholder="None" />
+                )}
 
                 {guestRecord?.has_plus_one && (
                   <div>
@@ -344,7 +493,7 @@ export default function RSVP() {
                   </div>
                 )}
 
-                {partyRsvps.length > 0 && (
+                {partyRsvps.length > 1 && (
                   <div>
                     <p
                       className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-4"
@@ -359,13 +508,19 @@ export default function RSVP() {
                             {member.name}
                           </span>
                           <div className="flex gap-2">
-                            {["Attending", "Declining"].map((label) => (
+                            {(member.id === guestRecord?.id ? ["Attending", "Declining"] : ["Attending", "Declining", "Unsure"]).map((label) => (
                               <button
                                 key={label}
                                 type="button"
-                                onClick={() => updatePartyMember(idx, "attending", label === "Attending")}
+                                onClick={() =>
+                                  updatePartyMember(
+                                    idx,
+                                    "response",
+                                    label === "Attending" ? "yes" : label === "Declining" ? "no" : "unsure"
+                                  )
+                                }
                                 className={`px-3 py-1 text-xs tracking-wider transition-all ${
-                                  member.attending === (label === "Attending")
+                                  member.response === (label === "Attending" ? "yes" : label === "Declining" ? "no" : "unsure")
                                     ? "bg-[#2c2c2c] text-white"
                                     : "border border-[#2c2c2c] text-[#2c2c2c]"
                                 }`}
@@ -376,7 +531,7 @@ export default function RSVP() {
                             ))}
                           </div>
                         </div>
-                        {member.attending && (
+                        {member.response === "yes" && (
                           <input
                             type="text"
                             placeholder="Dietary restrictions (if any)"
@@ -403,7 +558,7 @@ export default function RSVP() {
               />
             )}
 
-            {attending !== null && (
+            {((!isReturningGuest && attending !== null) || (isReturningGuest && updateMode === "details") || (isReturningGuest && updateMode === "rsvp" && attending !== null)) && (
               <button
                 type="submit"
                 disabled={loading}
