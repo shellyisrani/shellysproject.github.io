@@ -10,7 +10,7 @@ export default function RSVP() {
   const [lookupError, setLookupError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isReturningGuest, setIsReturningGuest] = useState(false);
-  const [updateMode, setUpdateMode] = useState("rsvp"); // rsvp | details
+  const [updateMode, setUpdateMode] = useState(null); // rsvp | details
 
   const [attending, setAttending] = useState(null);
   const [declineScope, setDeclineScope] = useState("self"); // self | additional
@@ -72,7 +72,7 @@ export default function RSVP() {
         setIsReturningGuest(
           (members || []).some((m) => m.submitted_at) || guest.attending !== null || Boolean(guest.phone)
         );
-        setUpdateMode("rsvp");
+        // Do not auto-select a mode for returning guests; they must choose
         setPhone(guest.phone || "");
         setStep("form");
       } else {
@@ -392,7 +392,10 @@ export default function RSVP() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setDeclineScope("additional")}
+                    onClick={() => {
+                      setDeclineScope("additional");
+                      // keep existing selections, ensure UI shows self as checked (rendered disabled)
+                    }}
                     className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
                       declineScope === "additional"
                         ? "bg-[#2c2c2c] text-white"
@@ -405,25 +408,29 @@ export default function RSVP() {
                 </div>
                 {declineScope === "additional" && (
                   <div className="mt-4 space-y-3">
-                    {partyGuests
-                      .filter((m) => m.id !== guestRecord?.id)
-                      .map((m) => {
-                        const checked = declineSelectedIds.includes(m.id);
-                        return (
-                          <label key={m.id} className="flex items-center gap-3 text-sm text-[#2c2c2c]">
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={(e) => {
-                                setDeclineSelectedIds((prev) =>
-                                  e.target.checked ? [...prev, m.id] : prev.filter((id) => id !== m.id)
-                                );
-                              }}
-                            />
-                            <span style={{ fontFamily: "var(--font-serif)" }}>{m.full_name}</span>
-                          </label>
-                        );
-                      })}
+                    {partyGuests.map((m) => {
+                      const isSelf = m.id === guestRecord?.id;
+                      const checked = isSelf ? true : declineSelectedIds.includes(m.id);
+                      return (
+                        <label key={m.id} className="flex items-center gap-3 text-sm text-[#2c2c2c]">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            disabled={isSelf}
+                            onChange={(e) => {
+                              if (isSelf) return;
+                              setDeclineSelectedIds((prev) =>
+                                e.target.checked ? [...prev, m.id] : prev.filter((id) => id !== m.id)
+                              );
+                            }}
+                          />
+                          <span style={{ fontFamily: "var(--font-serif)" }}>
+                            {m.full_name}
+                            {isSelf ? " (You)" : ""}
+                          </span>
+                        </label>
+                      );
+                    })}
                   </div>
                 )}
               </div>
