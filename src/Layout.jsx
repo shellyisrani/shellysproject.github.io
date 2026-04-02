@@ -9,6 +9,15 @@ export default function Layout({ children, currentPageName }) {
 
   const isHome = currentPageName === "Home";
 
+  const navItems = [
+    { name: "Our Story", page: "OurStory" },
+    { name: "Travel & Stay", page: "TravelAndStay" },
+    { name: "Day of the Wedding", page: "DayOfWedding" },
+    { name: "Registry", page: "Registry" },
+    { name: "Rehearsal Dinner", page: "RehearsalDinner" },
+    { name: "RSVP", page: "RSVP" },
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       <style>{`
@@ -25,17 +34,11 @@ export default function Layout({ children, currentPageName }) {
       `}</style>
 
       {/* Navigation */}
-      <nav className={`absolute top-0 left-0 right-0 z-50 transition-all duration-500 ${isHome ? 'bg-transparent' : 'bg-white/95 backdrop-blur-sm border-b border-gray-100'}`}>
+      <nav className={`top-0 left-0 right-0 z-50 transition-all duration-500 ${isHome ? 'absolute bg-transparent' : 'fixed bg-white/95 backdrop-blur-sm border-b border-gray-100'}`}>
         <div className="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
           {/* Left Nav Links */}
           <div className="hidden md:flex items-center gap-8">
-            {[
-              { name: "Our Story", page: "OurStory" },
-              { name: "Travel & Stay", page: "TravelAndStay" },
-              { name: "Day of the Wedding", page: "DayOfWedding" },
-              { name: "Registry", page: "Registry" },
-              { name: "Rehearsal Dinner", page: "RehearsalDinner" },
-            ].map((item) => (
+            {navItems.slice(0, -1).map((item) => (
               <Link
                 key={item.page}
                 to={createPageUrl(item.page)}
@@ -52,13 +55,9 @@ export default function Layout({ children, currentPageName }) {
           {/* Mobile Menu Button */}
           <button
             className="md:hidden z-50"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => setMobileMenuOpen(true)}
           >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6 text-[#2c2c2c]" />
-            ) : (
-              <Menu className={`w-6 h-6 ${isHome ? 'text-white' : 'text-[#2c2c2c]'}`} />
-            )}
+            <Menu className={`w-6 h-6 ${isHome ? 'text-white' : 'text-[#2c2c2c]'}`} />
           </button>
 
           {/* RSVP Button */}
@@ -74,31 +73,30 @@ export default function Layout({ children, currentPageName }) {
             RSVP
           </Link>
         </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="fixed inset-0 bg-white z-40 flex flex-col items-center justify-center gap-8 md:hidden">
-            {[
-              { name: "Our Story", page: "OurStory" },
-              { name: "Travel & Stay", page: "TravelAndStay" },
-              { name: "Day of the Wedding", page: "DayOfWedding" },
-              { name: "Registry", page: "Registry" },
-              { name: "Rehearsal Dinner", page: "RehearsalDinner" },
-              { name: "RSVP", page: "RSVP" },
-            ].map((item) => (
-              <Link
-                key={item.page}
-                to={createPageUrl(item.page)}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-[#2c2c2c] text-sm tracking-[0.25em] uppercase"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        )}
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 bg-white z-[60] flex flex-col items-center justify-center gap-10 md:hidden">
+          <button
+            className="absolute top-6 right-6"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <X className="w-6 h-6 text-[#2c2c2c]" />
+          </button>
+          {navItems.map((item) => (
+            <Link
+              key={item.page}
+              to={createPageUrl(item.page)}
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-[#2c2c2c] text-sm tracking-[0.25em] uppercase"
+              style={{ fontFamily: "var(--font-sans)" }}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+      )}
 
       <ScrollToTop />
 
