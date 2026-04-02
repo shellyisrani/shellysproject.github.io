@@ -1,95 +1,129 @@
 import React, { useState } from "react";
 import HomeButton from "@/components/wedding/HomeButton";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, Check } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function RSVP() {
-  const [formData, setFormData] = useState({
-    full_name: "",
-    email: "",
-    phone: "",
-    attending: "",
-    guest_count: 1,
-    dietary_restrictions: "",
-    message: "",
-  });
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [step, setStep] = useState("lookup"); // lookup | form | done
+  const [searchName, setSearchName] = useState("");
+  const [guestRecord, setGuestRecord] = useState(null);
+  const [partyGuests, setPartyGuests] = useState([]);
+  const [lookupError, setLookupError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const getPersonalizedMessage = () => {
-    const name = formData.full_name.trim().toLowerCase();
-    if (name === "diya israni" && formData.attending === "yes") {
-      return "I can't wait to munch with you!";
+  const [attending, setAttending] = useState(null);
+  const [phone, setPhone] = useState("");
+  const [dietary, setDietary] = useState("");
+  const [message, setMessage] = useState("");
+  const [partyRsvps, setPartyRsvps] = useState([]);
+
+  const handleLookup = async (e) => {
+    e.preventDefault();
+    setLookupError("");
+    setLoading(true);
+    try {
+      const { data: matches, error } = await supabase
+        .from("guests")
+        .select("id, full_name, party_id, has_plus_one, phone, attending, dietary_restrictions, message")
+        .ilike("full_name", `%${searchName.trim()}%`)
+        .limit(10);
+      if (error) throw error;
+
+      if (matches && matches.length > 0) {
+        // Pick the best match (first for now)
+        const guest = matches[0];
+        setGuestRecord(guest);
+
+        // Load entire party
+        const { data: members, error: partyErr } = await supabase
+          .from("guests")
+          .select("id, full_name, attending, dietary_restrictions")
+          .eq("party_id", guest.party_id)
+          .order("full_name");
+        if (partyErr) throw partyErr;
+
+        setPartyGuests(members || []);
+        const initial = (members || []).map((m) => ({
+          id: m.id,
+          name: m.full_name,
+          attending: m.attending ?? true,
+          dietary_restrictions: m.dietary_restrictions || "",
+        }));
+        setPartyRsvps(initial);
+        setStep("form");
+      } else {
+        setLookupError("We couldn't find your name on the guest list. Please check the spelling or contact us.");
+      }
+    } finally {
+      setLoading(false);
     }
-    if (name === "ryan ashe") {
-      return "wanna wear our matching mauve nike sneakers?";
-    }
-    return "We've received your RSVP. We can't wait to celebrate with you!";
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
-    
-    // Simulate form submission delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Note: This form doesn't actually save data anywhere.
-    // To enable form submissions, you can:
-    // 1. Use a form service like Formspree (free tier available)
-    // 2. Use EmailJS to send emails directly
-    // 3. Use Netlify Forms if hosting on Netlify
-    // 4. Set up your own backend API
-    
-    // For now, just show success message
-    console.log('RSVP submitted:', formData);
-    setSubmitted(true);
-    setSubmitting(false);
+    setLoading(true);
+    try {
+      // Update phone and main guest message/dietary on the selected guest
+      const mainGuestPayload = {
+        phone: phone || null,
+        dietary_restrictions: dietary || null,
+        message: message || null,
+        attending: attending === null ? null : attending,
+        submitted_at: new Date().toISOString(),
+      };
+      await supabase.from("guests").update(mainGuestPayload).eq("id", guestRecord.id);
+
+      // If attending, update each party member according to selections
+      if (attending === true && partyRsvps.length > 0) {
+        await Promise.all(
+          partyRsvps.map((m) =>
+            supabase
+              .from("guests")
+              .update({
+                attending: m.attending,
+                dietary_restrictions: m.attending ? (m.dietary_restrictions || null) : null,
+                submitted_at: new Date().toISOString(),
+              })
+              .eq("id", m.id)
+          )
+        );
+      }
+
+      // If declining, mark all in party as declining (optional; keep simple here)
+      if (attending === false && partyGuests.length > 0) {
+        await Promise.all(
+          partyGuests.map((g) =>
+            supabase
+              .from("guests")
+              .update({
+                attending: false,
+                dietary_restrictions: null,
+                submitted_at: new Date().toISOString(),
+              })
+              .eq("id", g.id)
+          )
+        );
+      }
+
+      setStep("done");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-white pt-24 flex items-center justify-center px-6">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-full bg-[#2c2c2c] flex items-center justify-center mx-auto mb-8">
-            <Check className="w-8 h-8 text-white" />
-          </div>
-          <h2
-            className="text-4xl md:text-5xl font-light text-[#2c2c2c] mb-4"
-            style={{ fontFamily: "var(--font-serif)" }}
-          >
-            Thank You!
-          </h2>
-          <p
-            className="text-[#2c2c2c] opacity-60 leading-relaxed"
-            style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
-          >
-            {getPersonalizedMessage()}
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const updatePartyMember = (idx, field, value) => {
+    setPartyRsvps((prev) => prev.map((m, i) => (i === idx ? { ...m, [field]: value } : m)));
+  };
 
   return (
-    <div className="min-h-screen bg-white pt-24">
+    <div className="min-h-screen bg-[#faf9f7] pt-24 pb-20">
       <HomeButton />
+
       {/* Hero */}
-      <div className="text-center px-6 py-16 md:py-20">
-        <p
-          className="text-xs tracking-[0.3em] uppercase text-[#c9a96e] mb-4"
-          style={{ fontFamily: "var(--font-sans)" }}
-        >
-          We'd Love to See You
+      <div className="text-center px-6 py-16">
+        <p className="text-xs tracking-[0.3em] uppercase text-[#c9a96e] mb-4" style={{ fontFamily: "var(--font-sans)" }}>
+          Kindly Reply
         </p>
-        <h1
-          className="text-5xl md:text-7xl font-light text-[#2c2c2c]"
-          style={{ fontFamily: "var(--font-serif)" }}
-        >
+        <h1 className="text-5xl md:text-7xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>
           RSVP
         </h1>
         <div className="flex items-center justify-center gap-6 mt-8">
@@ -98,155 +132,237 @@ export default function RSVP() {
         </div>
       </div>
 
-      {/* Form */}
-      <div className="max-w-xl mx-auto px-6 pb-28">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="space-y-2">
-            <Label
-              className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c]"
-              style={{ fontFamily: "var(--font-sans)" }}
+      <div className="max-w-lg mx-auto px-6">
+        {/* Step 1: Lookup */}
+        {step === "lookup" && (
+          <form onSubmit={handleLookup} className="flex flex-col gap-6">
+            <p
+              className="text-center text-[#2c2c2c] opacity-70 text-sm leading-relaxed"
+              style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
             >
-              Full Name *
-            </Label>
-            <Input
-              required
-              value={formData.full_name}
-              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className="border-[#e8e6e3] rounded-none py-6 focus:border-[#c9a96e] focus:ring-0"
-              style={{ fontFamily: "var(--font-sans)" }}
+              Please enter your name as it appears on your invitation to find your reservation.
+            </p>
+            <input
+              type="text"
               placeholder="Your full name"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c]"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              Phone Number *
-            </Label>
-            <Input
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
               required
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="border-[#e8e6e3] rounded-none py-6 focus:border-[#c9a96e] focus:ring-0"
-              style={{ fontFamily: "var(--font-sans)" }}
-              placeholder="Your phone number"
+              className="w-full border-b border-[#c9a96e] bg-transparent py-3 text-[#2c2c2c] placeholder-[#2c2c2c]/40 focus:outline-none text-center"
+              style={{ fontFamily: "var(--font-serif)", fontSize: "1.1rem" }}
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c]"
+            {lookupError && (
+              <p className="text-red-500 text-xs text-center" style={{ fontFamily: "var(--font-sans)" }}>
+                {lookupError}
+              </p>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-2 px-10 py-3 bg-[#2c2c2c] text-white text-xs tracking-[0.2em] uppercase hover:bg-[#1a1a1a] transition-all disabled:opacity-50"
               style={{ fontFamily: "var(--font-sans)" }}
             >
-              Email
-            </Label>
-            <Input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="border-[#e8e6e3] rounded-none py-6 focus:border-[#c9a96e] focus:ring-0"
-              style={{ fontFamily: "var(--font-sans)" }}
-              placeholder="your@email.com"
-            />
-          </div>
+              {loading ? "Searching..." : "Find My Invitation"}
+            </button>
+            {searchName && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchName("");
+                  setLookupError("");
+                }}
+                className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c] opacity-50 hover:opacity-80 transition-opacity text-center"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                Clear
+              </button>
+            )}
+          </form>
+        )}
 
-          <div className="space-y-2">
-            <Label
-              className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c]"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              Will you be attending? *
-            </Label>
-            <Select
-              required
-              value={formData.attending}
-              onValueChange={(value) => setFormData({ ...formData, attending: value })}
-            >
-              <SelectTrigger className="border-[#e8e6e3] rounded-none py-6 focus:border-[#c9a96e] focus:ring-0">
-                <SelectValue placeholder="Select your response" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="yes">Joyfully Accepts</SelectItem>
-                <SelectItem value="no">Regretfully Declines</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Step 2: Form */}
+        {step === "form" && (
+          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => {
+                  setStep("lookup");
+                  setAttending(null);
+                }}
+                className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c] opacity-50 hover:opacity-80 transition-opacity"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                ← Back
+              </button>
+            </div>
+            <p className="text-center text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)", fontSize: "1.3rem" }}>
+              Welcome, {guestRecord?.full_name}
+            </p>
 
-          {formData.attending === "yes" && (
-            <>
-              <div className="space-y-2">
-                <Label
-                  className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c]"
+            {/* Attending toggle */}
+            <div>
+              <p
+                className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-4 text-center"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                Will you be attending?
+              </p>
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setAttending(true)}
+                  className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                    attending === true ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                  }`}
                   style={{ fontFamily: "var(--font-sans)" }}
                 >
-                  Number of Guests
-                </Label>
-                <Select
-                  value={String(formData.guest_count)}
-                  onValueChange={(value) => setFormData({ ...formData, guest_count: Number(value) })}
+                  Joyfully Accepts
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAttending(false)}
+                  className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                    attending === false ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                  }`}
+                  style={{ fontFamily: "var(--font-sans)" }}
                 >
-                  <SelectTrigger className="border-[#e8e6e3] rounded-none py-6 focus:border-[#c9a96e] focus:ring-0">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                  Regretfully Declines
+                </button>
+              </div>
+            </div>
+
+            {attending === true && (
+              <>
+                <Field label="Phone Number" value={phone} onChange={setPhone} placeholder="(555) 000-0000" />
+                <Field label="Dietary Restrictions" value={dietary} onChange={setDietary} placeholder="None" />
+
+                {partyRsvps.length > 0 && (
+                  <div>
+                    <p
+                      className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-4"
+                      style={{ fontFamily: "var(--font-sans)" }}
+                    >
+                      Your Party
+                    </p>
+                    {partyRsvps.map((member, idx) => (
+                      <div key={member.id} className="mb-6 pb-6 border-b border-[#e8e6e3] last:border-0">
+                        <div className="flex items-center justify-between mb-3">
+                          <span style={{ fontFamily: "var(--font-serif)", fontSize: "1rem", color: "#2c2c2c" }}>
+                            {member.name}
+                          </span>
+                          <div className="flex gap-2">
+                            {["Attending", "Declining"].map((label) => (
+                              <button
+                                key={label}
+                                type="button"
+                                onClick={() => updatePartyMember(idx, "attending", label === "Attending")}
+                                className={`px-3 py-1 text-xs tracking-wider transition-all ${
+                                  member.attending === (label === "Attending")
+                                    ? "bg-[#2c2c2c] text-white"
+                                    : "border border-[#2c2c2c] text-[#2c2c2c]"
+                                }`}
+                                style={{ fontFamily: "var(--font-sans)" }}
+                              >
+                                {label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        {member.attending && (
+                          <input
+                            type="text"
+                            placeholder="Dietary restrictions (if any)"
+                            value={member.dietary_restrictions}
+                            onChange={(e) => updatePartyMember(idx, "dietary_restrictions", e.target.value)}
+                            className="w-full border-b border-[#e8e6e3] bg-transparent py-2 text-sm text-[#2c2c2c] placeholder-[#2c2c2c]/40 focus:outline-none focus:border-[#c9a96e] transition-colors"
+                            style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
+                          />
+                        )}
+                      </div>
                     ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  </div>
+                )}
+              </>
+            )}
 
-              <div className="space-y-2">
-                <Label
-                  className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c]"
-                  style={{ fontFamily: "var(--font-sans)" }}
-                >
-                  Dietary Restrictions
-                </Label>
-                <Input
-                  value={formData.dietary_restrictions}
-                  onChange={(e) => setFormData({ ...formData, dietary_restrictions: e.target.value })}
-                  className="border-[#e8e6e3] rounded-none py-6 focus:border-[#c9a96e] focus:ring-0"
-                  style={{ fontFamily: "var(--font-sans)" }}
-                  placeholder="Any allergies or dietary needs"
-                />
-              </div>
-            </>
-          )}
+            {attending !== null && (
+              <Field
+                label="Message for the Couple (optional)"
+                value={message}
+                onChange={setMessage}
+                placeholder="A note for Kerry & Shelly..."
+                multiline
+              />
+            )}
 
-          <div className="space-y-2">
-            <Label
-              className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c]"
-              style={{ fontFamily: "var(--font-sans)" }}
+            {attending !== null && (
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-10 py-3 bg-[#2c2c2c] text-white text-xs tracking-[0.2em] uppercase hover:bg-[#1a1a1a] transition-all disabled:opacity-50"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                {loading ? "Submitting..." : "Submit RSVP"}
+              </button>
+            )}
+          </form>
+        )}
+
+        {/* Step 3: Done */}
+        {step === "done" && (
+          <div className="text-center flex flex-col items-center gap-6 py-10">
+            <div className="w-16 h-px bg-[#c9a96e] mx-auto" />
+            <h2 className="text-3xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>
+              {attending ? "We can't wait to celebrate with you!" : "We'll miss you dearly."}
+            </h2>
+            <p
+              className="text-[#2c2c2c] opacity-60 text-sm leading-relaxed"
+              style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
             >
-              Message for the Couple
-            </Label>
-            <Textarea
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="border-[#e8e6e3] rounded-none focus:border-[#c9a96e] focus:ring-0 min-h-[120px]"
-              style={{ fontFamily: "var(--font-sans)" }}
-              placeholder="Share your love and well wishes..."
-            />
+              {attending
+                ? "Your RSVP has been received. We look forward to sharing this special day with you."
+                : "Thank you for letting us know. We hope to celebrate together soon."}
+            </p>
+            <div className="w-16 h-px bg-[#c9a96e] mx-auto" />
           </div>
-
-          <Button
-            type="submit"
-            disabled={submitting || !formData.full_name || !formData.attending || !formData.phone}
-            className="w-full py-6 bg-[#2c2c2c] hover:bg-[#1a1a1a] text-white text-xs tracking-[0.25em] uppercase rounded-none transition-all duration-300"
-            style={{ fontFamily: "var(--font-sans)" }}
-          >
-            {submitting ? "Sending..." : "Send RSVP"}
-          </Button>
-
-          <div className="text-center pt-4">
-            <Heart className="w-4 h-4 text-[#c9a96e] mx-auto" />
-          </div>
-        </form>
+        )}
       </div>
+    </div>
+  );
+}
+
+function Field({ label, value, onChange, placeholder, multiline }) {
+  const baseClass =
+    "w-full border-b border-[#e8e6e3] bg-transparent py-3 text-[#2c2c2c] placeholder-[#2c2c2c]/40 focus:outline-none focus:border-[#c9a96e] transition-colors text-sm";
+  const style = { fontFamily: "var(--font-sans)", fontWeight: 300 };
+  return (
+    <div>
+      <p
+        className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-2"
+        style={{ fontFamily: "var(--font-sans)" }}
+      >
+        {label}
+      </p>
+      {multiline ? (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          rows={3}
+          className={baseClass + " resize-none"}
+          style={style}
+        />
+      ) : (
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className={baseClass}
+          style={style}
+        />
+      )}
     </div>
   );
 }
