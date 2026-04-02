@@ -198,7 +198,7 @@ export default function RSVP() {
       <>
         {name === "steve ashe" && (
           <p
-            className="text-[#2c2c2c] opacity-80 text-sm leading-relaxed mt-3"
+            className="text-[#2c2c2c] opacity-80 text-base md:text-lg leading-relaxed mt-3"
             style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
           >
             Can&apos;t wait to have you officially officiate the wedding Steve!
@@ -215,7 +215,7 @@ export default function RSVP() {
         )}
         {inPartyEight && (
           <p
-            className="text-[#2c2c2c] opacity-80 text-sm leading-relaxed mt-3"
+            className="text-[#2c2c2c] opacity-80 text-base md:text-lg leading-relaxed mt-3"
             style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
           >
             Can&apos;t wait to see my favorite kiwi&apos;s!
@@ -652,7 +652,7 @@ export default function RSVP() {
               {attending ? "We can't wait to celebrate with you!" : "We'll miss you dearly."}
             </h2>
             <p
-              className="text-[#2c2c2c] opacity-60 text-sm leading-relaxed"
+              className="text-[#2c2c2c] opacity-60 text-base md:text-lg leading-relaxed"
               style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
             >
               {attending
