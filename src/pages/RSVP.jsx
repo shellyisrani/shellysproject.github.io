@@ -103,16 +103,13 @@ export default function RSVP() {
             ? `\nPlus One: ${plusOneName || "Name not provided"}${plusOneDietary ? ` (Dietary: ${plusOneDietary})` : ""}`
             : "\nPlus One: Declined"
           : "";
-      const shouldUpdateAttending = !isReturningGuest || updateMode === "rsvp";
       const mainGuestPayload = {
         phone: phone || null,
         dietary_restrictions: dietary || null,
         message: `${message || ""}${plusOneNote}`.trim() || null,
+        attending: attending === null ? null : attending,
         submitted_at: new Date().toISOString(),
       };
-      if (shouldUpdateAttending) {
-        mainGuestPayload.attending = attending === null ? "unsure" : attending ? "yes" : "no";
-      }
       await supabase.from("guests").update(mainGuestPayload).eq("id", guestRecord.id);
 
       // Returning guest editing contact/dietary only
@@ -140,7 +137,7 @@ export default function RSVP() {
             supabase
               .from("guests")
               .update({
-                attending: m.response, // "yes" | "no" | "unsure"
+                attending: m.response === "yes" ? true : m.response === "no" ? false : null,
                 dietary_restrictions: m.response === "yes" ? (m.dietary_restrictions || null) : null,
                 submitted_at: new Date().toISOString(),
               })
@@ -156,7 +153,7 @@ export default function RSVP() {
             supabase
               .from("guests")
               .update({
-                attending: "no",
+                attending: false,
                 dietary_restrictions: null,
                 submitted_at: new Date().toISOString(),
               })
