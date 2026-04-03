@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import HomeButton from "@/components/wedding/HomeButton";
 
@@ -19,6 +19,12 @@ export default function DayOfWedding() {
   const scrollTo = (id) => {
     refs[id].current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (window.location.hash === "#faq") {
+      setTimeout(() => refs.faq.current?.scrollIntoView({ behavior: "smooth" }), 300);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-white pt-24">

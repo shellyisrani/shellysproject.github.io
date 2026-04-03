@@ -189,7 +189,7 @@ export default function RSVP() {
     if (name === "nabhanya nebs" || name === "nabhanya neb") return "hey nebs!";
     if (name === "ryan ashe") return "Hey Señor Salmon 🐟";
     if (name === "wendy ashe") return "Hey Wendy aka Wendella 😈";
-    if (name === "paul sampson") return "Welcome, Paul Sampson 🐦";
+    if (name === "paul samson") return "Welcome, Paul Samson 🐦";
     return `Welcome, ${fullName}`;
   };
 
@@ -671,6 +671,7 @@ export default function RSVP() {
                 <Link
                   to="/DayOfWedding#faq"
                   className="text-[#c9a96e] underline underline-offset-4 hover:opacity-70 transition-opacity"
+                  onClick={() => setTimeout(() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' }), 300)}
                 >
                   FAQs
                 </Link>
