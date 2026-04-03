@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useRef, useState, useEffect } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import HomeButton from "@/components/wedding/HomeButton";
 
 const sections = [
