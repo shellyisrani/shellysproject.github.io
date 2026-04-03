@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import HomeButton from "@/components/wedding/HomeButton";
 import { supabase } from "@/lib/supabaseClient";
+import { createPageUrl } from "@/utils";
 
 export default function RSVP() {
   const [step, setStep] = useState("lookup"); // lookup | form | done
