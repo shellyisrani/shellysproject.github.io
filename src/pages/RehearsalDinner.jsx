@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from "react";
 import HomeButton from "@/components/wedding/HomeButton";
 import { Lock } from "lucide-react";
@@ -101,32 +102,68 @@ export default function RehearsalDinner() {
       <div className="max-w-3xl mx-auto px-6 pb-32 space-y-16">
         <div className="text-center">
           <p
-            className="text-[#2c2c2c] opacity-60 leading-relaxed"
-            style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: "0.9rem" }}
+            className="text-[#2c2c2c] text-sm leading-relaxed"
+            style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
           >
-            We're so excited to celebrate the evening before our big day with our closest family and friends. Details below!
+            We're so excited to celebrate the evening before our big day with our closest family and friends.
+          </p>
+          <p
+            className="text-[#2c2c2c] text-sm leading-relaxed"
+            style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
+          >
+            Details below!
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
-          {[
-            { label: "Date", value: "Friday, September 25", sub: "2026" },
-            { label: "Time", value: "7:00 PM", sub: "Dinner to follow" },
-            { label: "Location", value: "TBD", sub: "Details coming soon" },
-          ].map((item, i) => (
-            <div key={i} className="space-y-2">
-              <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>
-                {item.label}
-              </p>
+        {/* Part 1: Walk-through */}
+        <div className="border-b border-[#e8e6e3] pb-14">
+
+          <h2 className="text-3xl font-light text-[#2c2c2c] mb-8" style={{ fontFamily: "var(--font-serif)" }}>
+            Venue Walk-Through
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="space-y-2">
+              <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Date</p>
+              <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>Friday, September 25, 2026</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Time</p>
+              <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>4:00 PM</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Location</p>
               <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>
-                {item.value}
-              </p>
-              <p className="text-xs text-[#2c2c2c] opacity-50" style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}>
-                {item.sub}
+                <a href="https://maps.app.goo.gl/jhLa4WTGhErdWxzX9" target="_blank" rel="noopener noreferrer" className="underline decoration-[#c9a96e] underline-offset-4 hover:opacity-80">
+                  Roxbury Barn &amp; Estate
+                </a>
               </p>
             </div>
-          ))}
+          </div>
         </div>
+
+        {/* Part 2: Dinner */}
+        <div>
+
+          <h2 className="text-3xl font-light text-[#2c2c2c] mb-8" style={{ fontFamily: "var(--font-serif)" }}>
+            Dinner
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="space-y-2">
+              <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Date</p>
+              <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>Friday, September 25, 2026</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Time</p>
+              <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>6:00 PM</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Location</p>
+              <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>TBD</p>
+              <p className="text-xs text-[#2c2c2c] opacity-50" style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}>Location coming soon</p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ export default function HeroSection() {
       <div className="relative z-10 h-full flex flex-col justify-center text-white px-10 md:px-16 lg:px-24 max-w-xl">
         {/* Top text */}
         <p
-          className="text-xs md:text-sm tracking-[0.35em] uppercase mb-8 opacity-90"
+          className="text-xs md:text-sm tracking-[0.35em] uppercase mb-8 opacity-100 font-semibold"
           style={{ fontFamily: "var(--font-sans)" }}
         >
           We're Getting Married!
@@ -40,7 +40,7 @@ export default function HeroSection() {
 
         {/* Save the Date */}
         <p
-          className="mt-6 text-sm md:text-base tracking-[0.2em] uppercase opacity-80"
+          className="mt-6 text-sm md:text-base tracking-[0.2em] uppercase opacity-100 font-semibold"
           style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
         >
           Save the Date

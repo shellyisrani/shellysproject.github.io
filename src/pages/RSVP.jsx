@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import HomeButton from "@/components/wedding/HomeButton";
 import { supabase } from "@/lib/supabaseClient";
+import { createPageUrl } from "@/utils";
 
 export default function RSVP() {
   const [step, setStep] = useState("lookup"); // lookup | form | done
@@ -58,7 +59,7 @@ export default function RSVP() {
           id: m.id,
           name: m.full_name,
           response:
-            m.attending === true ? "yes" : m.attending === false ? "no" : isSelf ? "yes" : "unsure",
+            m.attending === "yes" ? "yes" : m.attending === "no" ? "no" : isSelf ? "yes" : "unsure",
           dietary_restrictions: m.dietary_restrictions || "",
           };
         });
@@ -107,7 +108,7 @@ export default function RSVP() {
         phone: phone || null,
         dietary_restrictions: dietary || null,
         message: `${message || ""}${plusOneNote}`.trim() || null,
-        attending: attending === null ? null : attending,
+        attending: attending === null ? null : attending ? "yes" : "no",
         submitted_at: new Date().toISOString(),
       };
       await supabase.from("guests").update(mainGuestPayload).eq("id", guestRecord.id);
@@ -137,7 +138,7 @@ export default function RSVP() {
             supabase
               .from("guests")
               .update({
-                attending: m.response === "yes" ? true : m.response === "no" ? false : null,
+                attending: m.response, // "yes" | "no" | "unsure"
                 dietary_restrictions: m.response === "yes" ? (m.dietary_restrictions || null) : null,
                 submitted_at: new Date().toISOString(),
               })
@@ -153,7 +154,7 @@ export default function RSVP() {
             supabase
               .from("guests")
               .update({
-                attending: false,
+                attending: "no",
                 dietary_restrictions: null,
                 submitted_at: new Date().toISOString(),
               })
@@ -659,6 +660,22 @@ export default function RSVP() {
                 : "Thank you for letting us know. We hope to celebrate together soon."}
             </p>
             {attending && <AcceptanceExtras />}
+            {attending && (
+              <p
+                className="text-[#2c2c2c] opacity-80 text-base md:text-lg leading-relaxed mt-2"
+                style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
+              >
+                Remember, <strong className="text-black">no black</strong> and{" "}
+                <strong className="text-red-600">no red</strong>! Check out the{" "}
+                <a
+                  href={`${createPageUrl("DayOfWedding")}#faq`}
+                  className="underline decoration-[#c9a96e] underline-offset-4 hover:opacity-80"
+                >
+                  FAQs
+                </a>{" "}
+                section for more info!
+              </p>
+            )}
             {attending && (
               <div className="mt-4">
                 <img

@@ -37,7 +37,7 @@ export default function OurStory() {
           />
         </div>
         {/* Centered paragraphs */}
-        <div className="max-w-2xl mx-auto text-center">
+        <div className="max-w-2xl mx-auto text-center space-y-6 md:space-y-8">
           <p
             className="text-[#2c2c2c] text-sm leading-relaxed"
             style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
