@@ -1,5 +1,6 @@
 // @ts-nocheck
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import HomeButton from "@/components/wedding/HomeButton";
 
 const sections = [
@@ -45,6 +46,17 @@ export default function DayOfWedding() {
         {/* Section Nav */}
         <div className="flex flex-wrap items-center justify-center gap-8 mt-12">
           {sections.map((s) => (
+            s.id === "faq" ? (
+              <Link
+                key={s.id}
+                to="/DayOfWedding#faq"
+                onClick={() => setTimeout(() => refs.faq.current?.scrollIntoView({ behavior: "smooth" }), 50)}
+                className="text-sm font-bold tracking-[0.15em] uppercase text-[#8a7560] hover:text-[#c9a96e] transition-colors duration-300 border-b-2 border-transparent hover:border-[#c9a96e] pb-1"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                {s.label}
+              </Link>
+            ) : (
             <button
               key={s.id}
               onClick={() => scrollTo(s.id)}
@@ -53,6 +65,7 @@ export default function DayOfWedding() {
             >
               {s.label}
             </button>
+            )
           ))}
         </div>
       </div>

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import HomeButton from "@/components/wedding/HomeButton";
 import { supabase } from "@/lib/supabaseClient";
 import { createPageUrl } from "@/utils";
@@ -667,12 +668,12 @@ export default function RSVP() {
               >
                 Remember, <strong className="text-black">no black</strong> and{" "}
                 <strong className="text-red-600">no red</strong>! Check out the{" "}
-                <a
-                  href="/DayOfWedding#faq"
-                  className="underline decoration-[#c9a96e] underline-offset-4 hover:opacity-80"
+                <Link
+                  to="/DayOfWedding#faq"
+                  className="text-[#c9a96e] underline underline-offset-4 hover:opacity-70 transition-opacity"
                 >
                   FAQs
-                </a>{" "}
+                </Link>
                 section for more info!
               </p>
             )}
