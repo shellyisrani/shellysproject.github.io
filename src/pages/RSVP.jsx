@@ -668,7 +668,7 @@ export default function RSVP() {
                 Remember, <strong className="text-black">no black</strong> and{" "}
                 <strong className="text-red-600">no red</strong>! Check out the{" "}
                 <a
-                  href={`${createPageUrl("DayOfWedding")}#faq`}
+                  href="/DayOfWedding#faq"
                   className="underline decoration-[#c9a96e] underline-offset-4 hover:opacity-80"
                 >
                   FAQs
