@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import HomeButton from "@/components/wedding/HomeButton";
 
 const sections = [
@@ -10,6 +10,8 @@ const sections = [
 ];
 
 export default function DayOfWedding() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const refs = {
     timeline: useRef(null),
     menu: useRef(null),
@@ -20,17 +22,16 @@ export default function DayOfWedding() {
     refs[id].current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Scroll to section if URL contains a hash (e.g., #faq)
-  const location = useLocation();
   useEffect(() => {
-    if (location.hash) {
-      const targetId = location.hash.replace("#", "");
-      const element = document.getElementById(targetId);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
+    const targetId = location.state?.scrollTo;
+    if (!targetId) return;
+    const targetRef = refs[targetId];
+    if (targetRef?.current) {
+      targetRef.current.scrollIntoView({ behavior: "smooth" });
+      // Clear state so refresh/back navigation doesn't keep re-scrolling
+      navigate(location.pathname, { replace: true, state: null });
     }
-  }, [location.hash]);
+  }, [location.pathname, location.state, navigate, refs]);
 
   return (
     <div className="min-h-screen bg-white pt-24">
