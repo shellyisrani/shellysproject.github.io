@@ -59,7 +59,7 @@ export default function HeroSection() {
       {/* The Details with arrow - truly centered */}
       <button
         onClick={scrollToDetails}
-        className="absolute bottom- left-0 right-0 flex flex-col items-center gap-2 cursor-pointer group z-10"
+        className="absolute bottom-10 left-0 right-0 flex flex-col items-center gap-2 cursor-pointer group z-10"
       >
         <span
           className="text-xs tracking-[0.25em] uppercase text-white opacity-80 group-hover:opacity-100 transition-opacity"
