@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import HomeButton from "@/components/wedding/HomeButton";
 import { supabase } from "@/lib/supabaseClient";
-import { createPageUrl } from "@/utils";
 
 export default function RSVP() {
   const [step, setStep] = useState("lookup"); // lookup | form | done
@@ -59,7 +58,7 @@ export default function RSVP() {
           id: m.id,
           name: m.full_name,
           response:
-            m.attending === "yes" ? "yes" : m.attending === "no" ? "no" : isSelf ? "yes" : "unsure",
+            m.attending === true ? "yes" : m.attending === false ? "no" : isSelf ? "yes" : "unsure",
           dietary_restrictions: m.dietary_restrictions || "",
           };
         });
@@ -108,7 +107,7 @@ export default function RSVP() {
         phone: phone || null,
         dietary_restrictions: dietary || null,
         message: `${message || ""}${plusOneNote}`.trim() || null,
-        attending: attending === null ? null : attending ? "yes" : "no",
+        attending: attending === null ? null : attending,
         submitted_at: new Date().toISOString(),
       };
       await supabase.from("guests").update(mainGuestPayload).eq("id", guestRecord.id);
@@ -138,7 +137,7 @@ export default function RSVP() {
             supabase
               .from("guests")
               .update({
-                attending: m.response, // "yes" | "no" | "unsure"
+                attending: m.response === "yes" ? true : m.response === "no" ? false : null,
                 dietary_restrictions: m.response === "yes" ? (m.dietary_restrictions || null) : null,
                 submitted_at: new Date().toISOString(),
               })
@@ -154,7 +153,7 @@ export default function RSVP() {
             supabase
               .from("guests")
               .update({
-                attending: "no",
+                attending: false,
                 dietary_restrictions: null,
                 submitted_at: new Date().toISOString(),
               })
