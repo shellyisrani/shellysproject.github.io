@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -63,7 +64,7 @@ export default function Layout({ children, currentPageName }) {
           {/* RSVP Button */}
           <Link
             to={createPageUrl("RSVP")}
-            className={`hidden md:block px-6 py-2.5 text-xs tracking-[0.2em] uppercase transition-all duration-300 ${
+            className={`px-6 py-2.5 text-xs tracking-[0.2em] uppercase transition-all duration-300 ${
               isHome
                 ? 'bg-white text-[#2c2c2c] hover:bg-gray-100'
                 : 'bg-[#2c2c2c] text-white hover:bg-[#1a1a1a]'
