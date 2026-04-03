@@ -1,5 +1,6 @@
 // @ts-nocheck
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import HomeButton from "@/components/wedding/HomeButton";
 
 const sections = [
@@ -18,6 +19,18 @@ export default function DayOfWedding() {
   const scrollTo = (id) => {
     refs[id].current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  // Scroll to section if URL contains a hash (e.g., #faq)
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash) {
+      const targetId = location.hash.replace("#", "");
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location.hash]);
 
   return (
     <div className="min-h-screen bg-white pt-24">
