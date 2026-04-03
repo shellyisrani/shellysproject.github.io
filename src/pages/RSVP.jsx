@@ -671,7 +671,7 @@ export default function RSVP() {
                   href="/DayOfWedding#faq"
                   className="underline decoration-[#c9a96e] underline-offset-4 hover:opacity-80"
                 >
-                  FAQs
+                  FAQs 
                 </a>{" "}
                 section for more info!
               </p>
