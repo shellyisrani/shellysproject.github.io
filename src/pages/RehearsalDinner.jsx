@@ -121,16 +121,16 @@ export default function RehearsalDinner() {
           <h2 className="text-3xl font-light text-[#2c2c2c] mb-8" style={{ fontFamily: "var(--font-serif)" }}>
             Venue Walk-Through
           </h2>
-          <div className="flex flex-col md:flex-row md:justify-between gap-8">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="space-y-2 md:order-1">
               <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Date</p>
               <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>Friday, September 25, 2026</p>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:order-2">
               <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Time</p>
               <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>4:00 PM</p>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:order-3">
               <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Location</p>
               <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>
                 <a href="https://maps.app.goo.gl/jhLa4WTGhErdWxzX9" target="_blank" rel="noopener noreferrer" className="underline decoration-[#c9a96e] underline-offset-4 hover:opacity-80">
@@ -147,16 +147,16 @@ export default function RehearsalDinner() {
           <h2 className="text-3xl font-light text-[#2c2c2c] mb-8" style={{ fontFamily: "var(--font-serif)" }}>
             Dinner
           </h2>
-          <div className="flex flex-col md:flex-row md:justify-between gap-8">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="space-y-2 md:order-1">
               <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Date</p>
               <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>Friday, September 25, 2026</p>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:order-2">
               <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Time</p>
               <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>6:00 PM</p>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:order-3">
               <p className="text-xs tracking-[0.25em] uppercase text-[#c9a96e]" style={{ fontFamily: "var(--font-sans)" }}>Location</p>
               <p className="text-xl font-light text-[#2c2c2c]" style={{ fontFamily: "var(--font-serif)" }}>TBD</p>
               <p className="text-xs text-[#2c2c2c] opacity-50" style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}>Location coming soon</p>
