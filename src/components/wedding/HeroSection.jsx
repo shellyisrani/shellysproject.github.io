@@ -1,8 +1,28 @@
 // @ts-nocheck
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
+function useCountdown(targetDate) {
+  const calc = () => {
+    const diff = new Date(targetDate) - new Date();
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    return {
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((diff / (1000 * 60)) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+    };
+  };
+  const [time, setTime] = useState(calc);
+  useEffect(() => {
+    const t = setInterval(() => setTime(calc()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return time;
+}
+
 export default function HeroSection() {
+  const countdown = useCountdown("2026-09-26T17:00:00-04:00"); // EDT (Eastern Daylight Time)
   const scrollToDetails = () => {
     const el = document.getElementById("the-details");
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -38,22 +58,27 @@ export default function HeroSection() {
           Kerry & Shelly
         </h1>
 
-        {/* Save the Date */}
-        <p
-          className="mt-6 text-sm md:text-base tracking-[0.2em] uppercase opacity-100 font-semibold"
-          style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
-        >
-          Save the Date
-        </p>
-
         {/* Date */}
         <p
-          className="mt-3 text-lg md:text-xl tracking-[0.3em] font-semibold"
+          className="mt-6 text-lg md:text-xl tracking-[0.3em] font-semibold"
           style={{ fontFamily: "var(--font-sans)" }}
         >
           9.26.2026
         </p>
 
+        {/* Countdown */}
+        <div className="mt-6 flex gap-6">
+          {[[countdown.days, "Days"], [countdown.hours, "Hrs"], [countdown.minutes, "Min"], [countdown.seconds, "Sec"]].map(([val, label]) => (
+            <div key={label} className="flex flex-col items-center">
+              <span className="text-3xl md:text-4xl font-light" style={{ fontFamily: "var(--font-serif)" }}>
+                {String(val).padStart(2, "0")}
+              </span>
+              <span className="text-xs tracking-[0.2em] uppercase opacity-70 mt-1" style={{ fontFamily: "var(--font-sans)" }}>
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* The Details with arrow - truly centered */}

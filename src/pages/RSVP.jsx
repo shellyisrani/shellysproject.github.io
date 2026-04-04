@@ -187,9 +187,12 @@ export default function RSVP() {
     if (name === "divya israni") return "hiii Divya";
     if (name === "diya israni") return "hi Diyu :)";
     if (name === "nabhanya nebs" || name === "nabhanya neb") return "hey nebs!";
-    if (name === "ryan ashe") return "Hey Señor Salmon 🐟";
+    if (name === "ryan ashe") return "Hola, Señor Salmon 🐟";
     if (name === "wendy ashe") return "Hey Wendy aka Wendella 😈";
-    if (name === "paul sampson") return "Welcome, Paul Sampson 🐦";
+    if (name === "paul sampson") return "Hey Paul Sampson 🕊️";
+    if (name === "baljot toor") return "hey billy!";
+    if (name === "anjali israni") return "hey girl hii";
+    if (name === "kaajal israni") return "i miss you can't wait to see you 🥲";
     return `Welcome, ${fullName}`;
   };
 
@@ -198,6 +201,14 @@ export default function RSVP() {
     const inPartyEight = partyGuests.some((g) => g.id) && guestRecord?.party_id === 8;
     return (
       <>
+        {name === "rachel halverson" && (
+          <p
+            className="text-[#2c2c2c] opacity-80 text-base md:text-lg leading-relaxed mt-3"
+            style={{ fontFamily: "var(--font-sans)", fontWeight: 300 }}
+          >
+            Get ready to RAGE!
+          </p>
+        )}
         {name === "steve ashe" && (
           <p
             className="text-[#2c2c2c] opacity-80 text-base md:text-lg leading-relaxed mt-3"
@@ -660,7 +671,6 @@ export default function RSVP() {
                 ? "Your RSVP has been received. We look forward to sharing this special day with you."
                 : "Thank you for letting us know. We hope to celebrate together soon."}
             </p>
-            {attending && <AcceptanceExtras />}
             {attending && (
               <p
                 className="text-[#2c2c2c] opacity-80 text-base md:text-lg leading-relaxed mt-2"
@@ -678,6 +688,7 @@ export default function RSVP() {
                 section for more info!
               </p>
             )}
+            {attending && <AcceptanceExtras />}
             {attending && (
               <div className="mt-4">
                 <img
