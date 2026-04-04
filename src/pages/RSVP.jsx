@@ -35,7 +35,7 @@ export default function RSVP() {
     try {
       const { data: matches, error } = await supabase
         .from("guests")
-        .select("id, full_name, party_id, has_plus_one, phone, attending, dietary_restrictions, message")
+        .select("id, full_name, party_id, has_plus_one, phone, attending, dietary_restrictions, message, first_submitted_at, latest_submitted_at, churned_on, churned_off")
         .ilike("full_name", `%${searchName.trim()}%`)
         .limit(10);
       if (error) throw error;
@@ -48,7 +48,7 @@ export default function RSVP() {
         // Load entire party
         const { data: members, error: partyErr } = await supabase
           .from("guests")
-          .select("id, full_name, phone, attending, dietary_restrictions, submitted_at")
+          .select("id, full_name, phone, attending, dietary_restrictions, first_submitted_at, latest_submitted_at")
           .eq("party_id", guest.party_id)
           .order("full_name");
         if (partyErr) throw partyErr;
@@ -59,6 +59,8 @@ export default function RSVP() {
           return {
           id: m.id,
           name: m.full_name,
+          prev_attending: m.attending,
+          first_submitted_at: m.first_submitted_at || null,
           response:
             m.attending === true ? "yes" : m.attending === false ? "no" : isSelf ? "yes" : "unsure",
           dietary_restrictions: m.dietary_restrictions || "",
@@ -105,12 +107,18 @@ export default function RSVP() {
             ? `\nPlus One: ${plusOneName || "Name not provided"}${plusOneDietary ? ` (Dietary: ${plusOneDietary})` : ""}`
             : "\nPlus One: Declined"
           : "";
+      const nowIso = new Date().toISOString();
       const mainGuestPayload = {
         phone: phone || null,
         dietary_restrictions: dietary || null,
         message: `${message || ""}${plusOneNote}`.trim() || null,
         attending: attending === null ? null : attending,
-        submitted_at: new Date().toISOString(),
+        // timestamps
+        latest_submitted_at: nowIso,
+        ...(guestRecord?.first_submitted_at ? {} : { first_submitted_at: nowIso }),
+        // churn flags
+        ...(guestRecord?.attending === true && attending === false ? { churned_off: nowIso } : {}),
+        ...(guestRecord?.attending === false && attending === true ? { churned_on: nowIso } : {}),
       };
       await supabase.from("guests").update(mainGuestPayload).eq("id", guestRecord.id);
 
@@ -123,7 +131,7 @@ export default function RSVP() {
               .update({
                 phone: m.phone || null,
                 dietary_restrictions: m.dietary_restrictions || null,
-                submitted_at: new Date().toISOString(),
+                latest_submitted_at: nowIso,
               })
               .eq("id", m.id)
           )
@@ -141,7 +149,12 @@ export default function RSVP() {
               .update({
                 attending: m.response === "yes" ? true : m.response === "no" ? false : null,
                 dietary_restrictions: m.response === "yes" ? (m.dietary_restrictions || null) : null,
-                submitted_at: new Date().toISOString(),
+                // timestamps per member
+                latest_submitted_at: nowIso,
+                ...(m.first_submitted_at ? {} : { first_submitted_at: nowIso }),
+                // churn flags per member when flipping attending
+                ...(m.prev_attending === true && m.response === "no" ? { churned_off: nowIso } : {}),
+                ...(m.prev_attending === false && m.response === "yes" ? { churned_on: nowIso } : {}),
               })
               .eq("id", m.id)
           )
@@ -157,7 +170,8 @@ export default function RSVP() {
               .update({
                 attending: false,
                 dietary_restrictions: null,
-                submitted_at: new Date().toISOString(),
+                latest_submitted_at: nowIso,
+                churned_off: nowIso,
               })
               .eq("id", memberId)
           )
@@ -324,43 +338,108 @@ export default function RSVP() {
               {getGreeting(guestRecord?.full_name)}
             </p>
 
-            {isReturningGuest && (
+            {isReturningGuest && updateMode !== "details" && (
               <div>
                 <p
-                  className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-4 text-center"
+                  className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-2 text-center"
                   style={{ fontFamily: "var(--font-sans)" }}
                 >
-                  Welcome back! Are you changing your RSVP or something else?
+                  Welcome back!
+                </p>
+                <p
+                  className="text-xs tracking-[0.15em] uppercase text-[#2c2c2c] opacity-70 mb-4 text-center"
+                  style={{ fontFamily: "var(--font-sans)" }}
+                >
+                  Current RSVP:{" "}
+                  <span className="font-semibold">
+                    {guestRecord?.attending === true ? "Attending" : guestRecord?.attending === false ? "Declining" : "Unsure"}
+                  </span>
                 </p>
                 <div className="flex gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setUpdateMode("rsvp")}
-                    className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
-                      updateMode === "rsvp"
-                        ? "bg-[#2c2c2c] text-white"
-                        : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
-                    }`}
-                    style={{ fontFamily: "var(--font-sans)" }}
-                  >
-                    Change RSVP
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUpdateMode("details");
-                      setAttending(null);
-                    }}
-                    className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
-                      updateMode === "details"
-                        ? "bg-[#2c2c2c] text-white"
-                        : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
-                    }`}
-                    style={{ fontFamily: "var(--font-sans)" }}
-                  >
-                    Something Else
-                  </button>
+                  {guestRecord?.attending === true && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setAttending(true)}
+                        className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                          attending === true ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                        }`}
+                        style={{ fontFamily: "var(--font-sans)" }}
+                      >
+                        Keep Attending
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAttending(false)}
+                        className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                          attending === false ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                        }`}
+                        style={{ fontFamily: "var(--font-sans)" }}
+                      >
+                        Switch to Declining
+                      </button>
+                    </>
+                  )}
+                  {guestRecord?.attending === false && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setAttending(false)}
+                        className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                          attending === false ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                        }`}
+                        style={{ fontFamily: "var(--font-sans)" }}
+                      >
+                        Keep Declining
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAttending(true)}
+                        className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                          attending === true ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                        }`}
+                        style={{ fontFamily: "var(--font-sans)" }}
+                      >
+                        Switch to Attending
+                      </button>
+                    </>
+                  )}
+                  {guestRecord?.attending === null && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setAttending(true)}
+                        className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                          attending === true ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                        }`}
+                        style={{ fontFamily: "var(--font-sans)" }}
+                      >
+                        Set to Attending
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAttending(false)}
+                        className={`flex-1 py-3 text-xs tracking-[0.2em] uppercase transition-all ${
+                          attending === false ? "bg-[#2c2c2c] text-white" : "border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5"
+                        }`}
+                        style={{ fontFamily: "var(--font-sans)" }}
+                      >
+                        Set to Declining
+                      </button>
+                    </>
+                  )}
                 </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUpdateMode("details");
+                    setAttending(null);
+                  }}
+                  className="mt-3 w-full py-2 text-xs tracking-[0.2em] uppercase border border-[#2c2c2c] text-[#2c2c2c] hover:bg-[#2c2c2c]/5 transition-all"
+                  style={{ fontFamily: "var(--font-sans)" }}
+                >
+                  Edit Contact/Dietary Info
+                </button>
               </div>
             )}
 

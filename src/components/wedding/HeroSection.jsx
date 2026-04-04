@@ -70,7 +70,7 @@ export default function HeroSection() {
         <div className="mt-6 flex gap-6">
           {[[countdown.days, "Days"], [countdown.hours, "Hrs"], [countdown.minutes, "Min"], [countdown.seconds, "Sec"]].map(([val, label]) => (
             <div key={label} className="flex flex-col items-center">
-              <span className="text-3xl md:text-4xl font-light" style={{ fontFamily: "var(--font-serif)" }}>
+              <span className="text-4xl md:text-4xl font-semibold md:font-light" style={{ fontFamily: "var(--font-serif)" }}>
                 {String(val).padStart(2, "0")}
               </span>
               <span className="text-xs tracking-[0.2em] uppercase opacity-70 mt-1" style={{ fontFamily: "var(--font-sans)" }}>
