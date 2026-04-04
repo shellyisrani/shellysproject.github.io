@@ -587,7 +587,7 @@ export default function RSVP() {
               </div>
             )}
 
-            {attending === true && (!isReturningGuest || updateMode === "rsvp") && (
+            {attending === true && updateMode !== "details" && (
               <>
                 <Field label="Phone Number" value={phone} onChange={setPhone} placeholder="(555) 000-0000" />
                 {showMainDietaryField && (
