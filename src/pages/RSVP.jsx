@@ -76,7 +76,7 @@ export default function RSVP() {
           }))
         );
         setIsReturningGuest(
-          (members || []).some((m) => m.submitted_at) || guest.attending !== null || Boolean(guest.phone)
+          (members || []).some((m) => m.first_submitted_at || m.latest_submitted_at) || guest.attending !== null || Boolean(guest.phone)
         );
         // Do not auto-select a mode for returning guests; they must choose
         setPhone(guest.phone || "");
@@ -478,7 +478,7 @@ export default function RSVP() {
             )}
 
             {/* Attending toggle */}
-            {(!isReturningGuest || updateMode === "rsvp") && (
+            {(!isReturningGuest || updateMode === "rsvp") && !(isReturningGuest && updateMode !== "details") && (
             <div>
               <p
                 className="text-xs tracking-[0.2em] uppercase text-[#2c2c2c] opacity-60 mb-4 text-center"
@@ -712,7 +712,7 @@ export default function RSVP() {
               </>
             )}
 
-            {attending !== null && (
+            {((!isReturningGuest && attending !== null) || (isReturningGuest && updateMode === "details") || (isReturningGuest && updateMode === "rsvp" && attending !== null) || (isReturningGuest && updateMode !== "details" && attending !== null)) && (
               <Field
                 label="Message for the Couple (optional)"
                 value={message}
@@ -722,7 +722,7 @@ export default function RSVP() {
               />
             )}
 
-            {((!isReturningGuest && attending !== null) || (isReturningGuest && updateMode === "details") || (isReturningGuest && updateMode === "rsvp" && attending !== null)) && (
+            {((!isReturningGuest && attending !== null) || (isReturningGuest && updateMode === "details") || (isReturningGuest && updateMode === "rsvp" && attending !== null) || (isReturningGuest && updateMode !== "details" && attending !== null)) && (
               <button
                 type="submit"
                 disabled={loading}
